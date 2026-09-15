@@ -318,7 +318,8 @@ function showPixPayment(paymentData) {
                     <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
                     <div class="text-sm text-blue-800">
                         <p class="font-semibold mb-1">Aguardando pagamento...</p>
-                        <p>Após o pagamento, seu certificado será processado automaticamente.</p>
+                        <p class="mb-2">Após realizar o pagamento, aguarde alguns instantes. O sistema verificará automaticamente.</p>
+                        <p class="text-xs">💡 Se o pagamento não for detectado automaticamente, recarregue esta página.</p>
                     </div>
                 </div>
             </div>
@@ -377,29 +378,47 @@ function copyPixCode() {
 let verificationInterval = null;
 
 function startPaymentVerification(paymentId) {
+    console.log('=== Iniciando verificação automática de pagamento ===');
+    console.log('Payment ID:', paymentId);
+    
+    let checkCount = 0;
+    const maxChecks = 360; // 360 checks * 5s = 30 minutos
+    
     // Verifica a cada 5 segundos
     verificationInterval = setInterval(async () => {
+        checkCount++;
+        
+        // Para após 30 minutos
+        if (checkCount > maxChecks) {
+            console.log('Tempo limite de verificação atingido (30 minutos)');
+            clearInterval(verificationInterval);
+            return;
+        }
+        
         try {
+            console.log(`Verificando pagamento (tentativa ${checkCount})...`);
             const status = await AVEN_API.checkPaymentStatus(paymentId);
+            console.log('Status do pagamento:', status);
             
             if (status.status === 'PAID') {
+                console.log('✅ Pagamento confirmado!');
                 clearInterval(verificationInterval);
                 onPaymentSuccess(status);
             } else if (status.status === 'REFUSED' || status.status === 'REFUNDED') {
+                console.log('❌ Pagamento recusado ou cancelado');
                 clearInterval(verificationInterval);
                 onPaymentError('Pagamento recusado ou cancelado');
+            } else {
+                console.log('⏳ Pagamento ainda pendente, aguardando...');
             }
         } catch (error) {
-            console.error('Erro ao verificar status:', error);
+            // Silenciosamente ignora erros de CORS ou rede
+            // O usuário ainda pode pagar, só não vai verificar automaticamente
+            if (checkCount % 12 === 0) { // Log a cada 1 minuto (12 * 5s)
+                console.warn('Verificação automática indisponível (CORS/rede):', error.message);
+            }
         }
     }, 5000);
-    
-    // Para a verificação após 30 minutos
-    setTimeout(() => {
-        if (verificationInterval) {
-            clearInterval(verificationInterval);
-        }
-    }, 30 * 60 * 1000);
 }
 
 // Callback de sucesso
