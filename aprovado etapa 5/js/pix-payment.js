@@ -505,7 +505,13 @@ document.addEventListener('DOMContentLoaded', function() {
             showPixPayment(paymentData);
         } catch (error) {
             console.error('Erro ao carregar pagamento salvo:', error);
+            // Se der erro, gera um novo
+            gerarPix();
         }
+    } else {
+        // Se não tem pagamento salvo ou já foi pago, gera um novo automaticamente
+        console.log('Gerando PIX automaticamente...');
+        gerarPix();
     }
 });
 
@@ -523,16 +529,11 @@ function testarPagamentoAprovado() {
     onPaymentSuccess(mockPaymentData);
 }
 
-// Função principal para gerar PIX (chamada pelo botão)
+// Função principal para gerar PIX (chamada pelo botão ou automaticamente)
 async function gerarPix() {
     console.log('=== Iniciando geração de PIX ===');
     
-    // Esconde botão e mostra loading
-    const buttonContainer = document.getElementById('payment-button-container');
-    if (buttonContainer) {
-        buttonContainer.style.display = 'none';
-    }
-    
+    // Mostra loading (já está visível por padrão)
     const loadingElement = document.getElementById('pix-loading');
     if (loadingElement) {
         loadingElement.classList.remove('hidden');
@@ -577,11 +578,6 @@ async function gerarPix() {
                     </button>
                 </div>
             `;
-        }
-        
-        // Mostra botão novamente
-        if (buttonContainer) {
-            buttonContainer.style.display = 'flex';
         }
     }
 }

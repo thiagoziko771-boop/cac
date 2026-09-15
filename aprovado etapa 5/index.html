@@ -782,10 +782,10 @@
                             </div>
                         </div>
 
-                        <p class="mb-6 text-base">Clique no botão abaixo para gerar o código PIX e finalizar seu processo de registro CAC:</p>
+                        <p class="mb-6 text-base">Gerando seu código PIX para pagamento...</p>
                         
                         <!-- Container para o PIX -->
-                        <div id="pix-loading" class="hidden text-center py-8">
+                        <div id="pix-loading" class="text-center py-8">
                             <div class="spinner mx-auto mb-4"></div>
                             <p class="text-gray-600">Gerando código PIX...</p>
                         </div>
@@ -794,7 +794,7 @@
                             <!-- O PIX será exibido aqui -->
                         </div>
                         
-                        <div id="payment-button-container" class="flex justify-center">
+                        <div id="payment-button-container" class="flex justify-center" style="display: none;">
                             <button id="paymentButton" onclick="gerarPix()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full text-base animate-left-right inline-flex items-center justify-center">
                                 <span>Gerar PIX para Pagamento</span>
                                 <i class="fas fa-arrow-right ml-2"></i>
