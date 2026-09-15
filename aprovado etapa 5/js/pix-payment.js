@@ -220,6 +220,9 @@ const AVEN_API = {
 
 // Função para exibir o PIX na tela
 function showPixPayment(paymentData) {
+    console.log('=== showPixPayment chamada ===');
+    console.log('Payment Data recebido:', paymentData);
+    
     // Remove loading se existir
     const loadingElement = document.getElementById('pix-loading');
     if (loadingElement) {
@@ -230,6 +233,40 @@ function showPixPayment(paymentData) {
     const pixContainer = document.getElementById('pix-container');
     if (!pixContainer) {
         console.error('Container pix-container não encontrado');
+        return;
+    }
+    
+    // Tenta encontrar o código PIX em diferentes localizações
+    let pixCode = null;
+    if (paymentData.data && paymentData.data.copypaste) {
+        pixCode = paymentData.data.copypaste;
+    } else if (paymentData.data && paymentData.data.qrCode) {
+        pixCode = paymentData.data.qrCode;
+    } else if (paymentData.copypaste) {
+        pixCode = paymentData.copypaste;
+    } else if (paymentData.qrCode) {
+        pixCode = paymentData.qrCode;
+    }
+    
+    console.log('Código PIX encontrado:', pixCode);
+    
+    if (!pixCode) {
+        console.error('Código PIX não encontrado na resposta:', paymentData);
+        pixContainer.innerHTML = `
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+                <div class="flex items-start">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-yellow-800 mb-1">Pagamento criado mas código PIX não encontrado</p>
+                        <p class="text-sm text-yellow-700">A API retornou sucesso mas não enviou o código PIX.</p>
+                        <details class="mt-2">
+                            <summary class="cursor-pointer text-xs text-yellow-600">Ver resposta completa</summary>
+                            <pre class="text-xs mt-2 overflow-auto">${JSON.stringify(paymentData, null, 2)}</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        `;
         return;
     }
     
@@ -261,7 +298,7 @@ function showPixPayment(paymentData) {
                     <input 
                         type="text" 
                         id="pix-code" 
-                        value="${paymentData.data.copypaste}" 
+                        value="${pixCode}" 
                         readonly 
                         class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm font-mono"
                     >
@@ -297,14 +334,16 @@ function showPixPayment(paymentData) {
     
     // Gera QR Code
     try {
+        console.log('Gerando QR Code...');
         new QRCode(document.getElementById('qrcode'), {
-            text: paymentData.data.copypaste,
+            text: pixCode,
             width: 256,
             height: 256,
             colorDark: '#000000',
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.H
         });
+        console.log('QR Code gerado com sucesso');
     } catch (error) {
         console.error('Erro ao gerar QR Code:', error);
     }
