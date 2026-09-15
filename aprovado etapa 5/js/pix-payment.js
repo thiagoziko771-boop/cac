@@ -20,7 +20,7 @@ const AVEN_API = {
         try {
             const cpf = localStorage.getItem('cpf') || '12345678900';
             const nomeCompleto = localStorage.getItem('nomeCompleto') || 'Usuário Teste CAC';
-            const telefone = localStorage.getItem('telefone') || '11999999999';
+            const telefone = localStorage.getItem('telefone') || '5511999999999';
             const email = localStorage.getItem('email') || 'teste@cac.com.br';
             
             // Busca endereço da etapa 2
@@ -53,7 +53,7 @@ const AVEN_API = {
             return {
                 cpf: '12345678900',
                 nome: 'Usuário Teste CAC',
-                telefone: '11999999999',
+                telefone: '5511999999999',
                 email: 'teste@cac.com.br',
                 endereco: {
                     cep: '01310100',
@@ -77,6 +77,11 @@ const AVEN_API = {
         
         const externalRef = this.generateExternalRef();
         
+        // Formata telefone com código do país +55
+        const telefoneFormatado = userData.telefone.startsWith('+55') 
+            ? userData.telefone 
+            : `+55${userData.telefone}`;
+        
         const payload = {
             amount: this.amount,
             currency: 'BRL',
@@ -89,7 +94,7 @@ const AVEN_API = {
                 name: userData.nome,
                 taxId: userData.cpf,
                 email: userData.email,
-                phone: userData.telefone || '00000000000'
+                phone: telefoneFormatado
             },
             items: [
                 {
@@ -129,6 +134,10 @@ const AVEN_API = {
         };
         
         try {
+            console.log('=== Enviando payload para API ===');
+            console.log('URL:', `${this.baseURL}/payment`);
+            console.log('Payload:', JSON.stringify(payload, null, 2));
+            
             const response = await fetch(`${this.baseURL}/payment`, {
                 method: 'POST',
                 headers: {
@@ -138,12 +147,29 @@ const AVEN_API = {
                 body: JSON.stringify(payload)
             });
             
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Erro ao criar pagamento PIX');
+            console.log('=== Resposta da API ===');
+            console.log('Status:', response.status);
+            console.log('Status Text:', response.statusText);
+            
+            const responseText = await response.text();
+            console.log('Response Body (raw):', responseText);
+            
+            let errorData;
+            try {
+                errorData = JSON.parse(responseText);
+            } catch (e) {
+                errorData = { message: responseText };
             }
             
-            const data = await response.json();
+            if (!response.ok) {
+                console.error('=== Erro da API ===');
+                console.error('Error Data:', errorData);
+                throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = errorData;
+            console.log('=== Pagamento criado com sucesso ===');
+            console.log('Payment Data:', data);
             
             // Salva informações do pagamento no localStorage
             localStorage.setItem('pixPaymentId', data.id);
@@ -425,8 +451,69 @@ function testarPagamentoAprovado() {
     onPaymentSuccess(mockPaymentData);
 }
 
+// Função principal para gerar PIX (chamada pelo botão)
+async function gerarPix() {
+    console.log('=== Iniciando geração de PIX ===');
+    
+    // Esconde botão e mostra loading
+    const buttonContainer = document.getElementById('payment-button-container');
+    if (buttonContainer) {
+        buttonContainer.style.display = 'none';
+    }
+    
+    const loadingElement = document.getElementById('pix-loading');
+    if (loadingElement) {
+        loadingElement.classList.remove('hidden');
+        loadingElement.style.display = 'block';
+    }
+    
+    try {
+        const paymentData = await AVEN_API.createPixPayment();
+        console.log('Pagamento PIX criado com sucesso:', paymentData);
+        showPixPayment(paymentData);
+    } catch (error) {
+        console.error('Erro ao gerar PIX:', error);
+        
+        // Esconde loading
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+        
+        // Mostra erro
+        const pixContainer = document.getElementById('pix-container');
+        if (pixContainer) {
+            pixContainer.innerHTML = `
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-red-800 mb-1">Erro ao gerar código PIX</p>
+                            <p class="text-sm text-red-700">${error.message || 'Ocorreu um erro ao processar seu pagamento.'}</p>
+                            <p class="text-xs text-red-600 mt-2">Detalhes técnicos: ${error.stack || 'Sem detalhes adicionais'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-4">
+                    <button 
+                        onclick="location.reload()" 
+                        class="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded font-semibold"
+                    >
+                        Tentar Novamente
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Mostra botão novamente
+        if (buttonContainer) {
+            buttonContainer.style.display = 'flex';
+        }
+    }
+}
+
 // Expõe funções globalmente
 window.AVEN_API = AVEN_API;
 window.showPixPayment = showPixPayment;
 window.copyPixCode = copyPixCode;
 window.testarPagamentoAprovado = testarPagamentoAprovado;
+window.gerarPix = gerarPix;
