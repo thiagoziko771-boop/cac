@@ -113,7 +113,7 @@ const AVEN_API = {
                     district: userData.endereco.bairro || 'Centro',
                     street: userData.endereco.logradouro || 'Rua Exemplo',
                     number: userData.endereco.numero || '0',
-                    complement: userData.endereco.complemento || null,
+                    complement: userData.endereco.complemento || '',
                     zipCode: userData.endereco.cep || '00000000'
                 }
             },
@@ -125,7 +125,7 @@ const AVEN_API = {
                 checkoutUrl: window.location.href,
                 returnUrl: window.location.href,
                 shopUrl: window.location.origin,
-                referrerLink: document.referrer || null,
+                referrerLink: document.referrer || '',
                 extra: {
                     tipo: 'taxa_registro_cac',
                     dataRegistro: new Date().toISOString()
