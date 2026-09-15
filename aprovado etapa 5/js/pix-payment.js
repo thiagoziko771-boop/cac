@@ -7,8 +7,8 @@ const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
     apiKey: 'd_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw',
     
-    // Valor da taxa CAC em centavos (R$ 299,90)
-    amount: 29990,
+    // Valor da taxa CAC em centavos (R$ 48,70)
+    amount: 4870,
     
     // Gera um ID único para a transação
     generateExternalRef() {
@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function testarPagamentoAprovado() {
     const mockPaymentData = {
         id: 'test_payment_' + Date.now(),
-        amount: 29990,
+        amount: 4870,
         status: 'PAID',
         paidAt: new Date().toISOString(),
         method: 'PIX'
