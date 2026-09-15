@@ -126,10 +126,10 @@ const AVEN_API = {
                 returnUrl: window.location.href,
                 shopUrl: window.location.origin,
                 referrerLink: document.referrer || '',
-                extra: {
+                extra: JSON.stringify({
                     tipo: 'taxa_registro_cac',
                     dataRegistro: new Date().toISOString()
-                }
+                })
             }
         };
         
