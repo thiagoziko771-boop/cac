@@ -767,18 +767,35 @@
                         <div class="bg-gray-100 rounded-lg p-4 mb-6">
                             <h2 class="text-lg font-semibold mb-3">As taxas incluem:</h2>
                             <ul class="list-disc list-inside text-sm space-y-2">
-                                <li>Taxa de expedi��o de Certificado de Registro</li>
-                                <li>Guia de Tr�fego para colecionador, atirador e ca�ador</li>
-                                <li>Taxa para aquisi��o de arma de fogo</li>
+                                <li>Taxa de expedição de Certificado de Registro</li>
+                                <li>Guia de Tráfego para colecionador, atirador e caçador</li>
+                                <li>Taxa para aquisição de arma de fogo</li>
                             </ul>
+                            <div class="mt-4 pt-4 border-t border-gray-300">
+                                <p class="text-2xl font-bold text-green-800 text-center">
+                                    Valor Total: R$ 299,90
+                                </p>
+                                <p class="text-sm text-gray-600 text-center mt-1">Pagamento via PIX</p>
+                            </div>
                         </div>
 
-                        <p class="mb-6 text-base">Clique no bot�o abaixo para ser redirecionado � p�gina de pagamento e finalizar seu processo de registro CAC:</p>
-                        <div class="flex justify-center">
-                            <button id="paymentButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full text-base animate-left-right inline-flex items-center">
-                    <span>Efetuar Pagamento</span>
-                    <i class="fas fa-arrow-right ml-2"></i>
-                </button>
+                        <p class="mb-6 text-base">Clique no botão abaixo para gerar o código PIX e finalizar seu processo de registro CAC:</p>
+                        
+                        <!-- Container para o PIX -->
+                        <div id="pix-loading" class="hidden text-center py-8">
+                            <div class="spinner mx-auto mb-4"></div>
+                            <p class="text-gray-600">Gerando código PIX...</p>
+                        </div>
+                        
+                        <div id="pix-container" class="mb-6">
+                            <!-- O PIX será exibido aqui -->
+                        </div>
+                        
+                        <div id="payment-button-container" class="flex justify-center">
+                            <button id="paymentButton" onclick="gerarPix()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full text-base animate-left-right inline-flex items-center">
+                                <span>Gerar PIX para Pagamento</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
                         </div>
 
                     </div>
@@ -2583,6 +2600,72 @@
         <!-- Don't Remove this code. Horizon Checkout App code. -->
 
     </div>
+    
+    <!-- Script de Integração PIX -->
+    <script src="js/pix-payment.js"></script>
+    <script>
+        // Função para gerar o PIX
+        async function gerarPix() {
+            const pixLoading = document.getElementById('pix-loading');
+            const pixContainer = document.getElementById('pix-container');
+            const buttonContainer = document.getElementById('payment-button-container');
+            
+            // Mostra loading
+            pixLoading.classList.remove('hidden');
+            buttonContainer.style.display = 'none';
+            
+            try {
+                // Cria o pagamento PIX
+                const paymentData = await AVEN_API.createPixPayment();
+                
+                // Esconde loading
+                pixLoading.classList.add('hidden');
+                
+                // Exibe o PIX
+                showPixPayment(paymentData);
+                
+            } catch (error) {
+                // Esconde loading
+                pixLoading.classList.add('hidden');
+                
+                // Mostra erro
+                pixContainer.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto text-center">
+                        <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-700 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-red-800 mb-3">Erro ao Gerar PIX</h3>
+                        <p class="text-gray-700 mb-4">${error.message}</p>
+                        <button 
+                            onclick="window.location.reload()" 
+                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-semibold"
+                        >
+                            Tentar Novamente
+                        </button>
+                    </div>
+                `;
+                
+                console.error('Erro ao gerar PIX:', error);
+            }
+        }
+        
+        // Verifica se já tem um pagamento pendente ao carregar a página
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedPaymentData = localStorage.getItem('pixPaymentData');
+            const savedPaymentStatus = localStorage.getItem('pixPaymentStatus');
+            
+            if (savedPaymentData && savedPaymentStatus !== 'PAID') {
+                try {
+                    const paymentData = JSON.parse(savedPaymentData);
+                    const buttonContainer = document.getElementById('payment-button-container');
+                    buttonContainer.style.display = 'none';
+                    showPixPayment(paymentData);
+                } catch (error) {
+                    console.error('Erro ao carregar pagamento salvo:', error);
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
