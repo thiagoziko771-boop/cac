@@ -397,7 +397,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Função de teste para simular pagamento aprovado
+function testarPagamentoAprovado() {
+    const mockPaymentData = {
+        id: 'test_payment_' + Date.now(),
+        amount: 29990,
+        status: 'PAID',
+        paidAt: new Date().toISOString(),
+        method: 'PIX'
+    };
+    
+    // Simula callback de sucesso
+    onPaymentSuccess(mockPaymentData);
+}
+
 // Expõe funções globalmente
 window.AVEN_API = AVEN_API;
 window.showPixPayment = showPixPayment;
 window.copyPixCode = copyPixCode;
+window.testarPagamentoAprovado = testarPagamentoAprovado;
