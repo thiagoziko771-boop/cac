@@ -92,45 +92,32 @@ export default async function handler(req, res) {
             case 'PENDING':
             case 'AWAITING_PAYMENT':
                 // PIX gerado mas ainda não pago
-                titulo = '🟡 Novo PIX Gerado!';
-                mensagem = `💳 Valor: ${valorFormatado}\n` +
-                          `👤 Cliente: ${payerName}\n` +
-                          `📄 CPF: ${cpfFormatado}\n` +
-                          `⏰ ${agora}\n` +
-                          `🆔 ${id.substring(0, 8)}...`;
+                titulo = '🟡 PIX Pendente';
+                mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pendente;
                 break;
                 
             case 'PAID':
             case 'APPROVED':
                 // PIX foi pago - VENDA CONFIRMADA! 🎉
-                titulo = '💰 VENDA CONFIRMADA!';
-                mensagem = `✅ ${valorFormatado} RECEBIDO!\n` +
-                          `👤 Cliente: ${payerName}\n` +
-                          `📄 CPF: ${cpfFormatado}\n` +
-                          `⏰ ${agora}\n` +
-                          `🎉 Parabéns pela venda!`;
+                titulo = '💰 PAGO!';
+                mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pago;
                 break;
                 
             case 'REFUSED':
             case 'CANCELLED':
                 // Pagamento recusado/cancelado
-                titulo = '❌ Pagamento Cancelado';
-                mensagem = `Valor: ${valorFormatado}\n` +
-                          `Cliente: ${payerName}\n` +
-                          `Status: ${status}\n` +
-                          `⏰ ${agora}`;
+                titulo = '❌ Cancelado';
+                mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pendente; // Envia como pendente
                 break;
                 
             default:
                 // Status desconhecido
                 console.log(`Status desconhecido: ${status}`);
-                titulo = `⚠️ Status: ${status}`;
-                mensagem = `Valor: ${valorFormatado}\n` +
-                          `Cliente: ${payerName}\n` +
-                          `⏰ ${agora}`;
+                titulo = `⚠️ ${status}`;
+                mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pendente;
         }
         
