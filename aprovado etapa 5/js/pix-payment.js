@@ -586,17 +586,49 @@ async function gerarPix() {
         }
         
         // Dispara evento para Utmify detectar venda pendente
-        // Clica automaticamente no botão invisível "Enviar Teste" para Utmify capturar
+        // Submete formulário invisível "Enviar Teste" para Utmify capturar
         try {
+            const utmifyForm = document.getElementById('utmify-checkout-form');
             const utmifyButton = document.getElementById('utmify-trigger-button');
-            if (utmifyButton) {
-                // Aguarda 500ms antes de clicar para garantir que Utmify está pronto
+            
+            if (utmifyForm && utmifyButton) {
+                // Previne o formulário de realmente submeter (redirecionar)
+                utmifyForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('[Utmify] Submit interceptado - não vai redirecionar');
+                });
+                
+                // Aguarda 800ms antes de submeter para garantir que Utmify está pronto
                 setTimeout(() => {
+                    // Tenta múltiplas formas de disparar o evento
+                    
+                    // Método 1: Clique no botão (pode disparar event listeners do Utmify)
                     utmifyButton.click();
-                    console.log('[Utmify] Botão "Enviar Teste" clicado automaticamente');
-                }, 500);
+                    console.log('[Utmify] Botão clicado');
+                    
+                    // Método 2: Dispara evento de clique manualmente
+                    const clickEvent = new MouseEvent('click', {
+                        view: window,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    utmifyButton.dispatchEvent(clickEvent);
+                    console.log('[Utmify] MouseEvent disparado');
+                    
+                    // Método 3: Submit do formulário (pode ser o que Utmify detecta)
+                    setTimeout(() => {
+                        const submitEvent = new Event('submit', {
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        utmifyForm.dispatchEvent(submitEvent);
+                        console.log('[Utmify] Submit event disparado');
+                    }, 100);
+                    
+                    console.log('[Utmify] Todos os eventos disparados');
+                }, 800);
             } else {
-                console.warn('[Utmify] Botão trigger não encontrado');
+                console.warn('[Utmify] Formulário ou botão trigger não encontrado');
             }
         } catch (error) {
             console.error('[Utmify] Erro ao disparar evento:', error);
