@@ -92,7 +92,7 @@ export default async function handler(req, res) {
             case 'PENDING':
             case 'AWAITING_PAYMENT':
                 // PIX gerado mas ainda não pago
-                titulo = '🟡 PIX Pendente';
+                titulo = '🟡 Venda Pendente';
                 mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pendente;
                 break;
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
             case 'PAID':
             case 'APPROVED':
                 // PIX foi pago - VENDA CONFIRMADA! 🎉
-                titulo = '💰 PAGO!';
+                titulo = '💰 Venda Aprovada';
                 mensagem = `R$ ${valorFormatado}`;
                 pushcutUrl = PUSHCUT_URLS.pago;
                 break;
