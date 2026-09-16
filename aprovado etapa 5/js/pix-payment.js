@@ -555,6 +555,15 @@ async function gerarPix() {
         const paymentData = await AVEN_API.createPixPayment();
         console.log('Pagamento PIX criado com sucesso:', paymentData);
         
+        // Evento Facebook Pixel: AddPaymentInfo
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddPaymentInfo', {
+                value: 48.70,
+                currency: 'BRL',
+                content_name: 'Registro CAC'
+            });
+        }
+        
         // Busca userData para passar para a tela
         const userData = AVEN_API.getUserData();
         showPixPayment(paymentData, userData);
