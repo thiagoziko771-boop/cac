@@ -516,6 +516,16 @@ function onPaymentError(message) {
 
 // Inicialização ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
+    // Evento Facebook Pixel: InitiateCheckout
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'InitiateCheckout', {
+            value: 48.70,
+            currency: 'BRL',
+            content_name: 'Registro CAC',
+            content_type: 'product'
+        });
+    }
+    
     // Verifica se já existe um pagamento pendente
     const savedPaymentData = localStorage.getItem('pixPaymentData');
     const savedPaymentStatus = localStorage.getItem('pixPaymentStatus');
