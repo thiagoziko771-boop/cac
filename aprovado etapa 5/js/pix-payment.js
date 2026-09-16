@@ -585,53 +585,38 @@ async function gerarPix() {
             });
         }
         
-        // Dispara evento para Utmify detectar venda pendente
-        // Submete formulário invisível "Enviar Teste" para Utmify capturar
+        // IMPORTANTE: O Utmify está configurado para detectar por URL (aprovado%20etapa%205)
+        // Como já estamos na URL correta, o Utmify deveria detectar automaticamente
+        // Mas vamos garantir disparando eventos adicionais
+        
+        console.log('[Utmify] Página de checkout carregada - URL:', window.location.href);
+        console.log('[Utmify] Utmify deveria detectar automaticamente por estar na URL aprovado etapa 5');
+        
+        // Dispara evento para garantir que foi registrado
         try {
-            const utmifyForm = document.getElementById('utmify-checkout-form');
-            const utmifyButton = document.getElementById('utmify-trigger-button');
+            // Push para dataLayer (caso use Google Tag Manager)
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'initiate_checkout',
+                'checkout_step': 'payment',
+                'value': 48.70,
+                'currency': 'BRL',
+                'payment_method': 'PIX'
+            });
+            console.log('[Utmify] dataLayer event pushed');
             
-            if (utmifyForm && utmifyButton) {
-                // Previne o formulário de realmente submeter (redirecionar)
-                utmifyForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('[Utmify] Submit interceptado - não vai redirecionar');
-                });
-                
-                // Aguarda 800ms antes de submeter para garantir que Utmify está pronto
-                setTimeout(() => {
-                    // Tenta múltiplas formas de disparar o evento
-                    
-                    // Método 1: Clique no botão (pode disparar event listeners do Utmify)
-                    utmifyButton.click();
-                    console.log('[Utmify] Botão clicado');
-                    
-                    // Método 2: Dispara evento de clique manualmente
-                    const clickEvent = new MouseEvent('click', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    utmifyButton.dispatchEvent(clickEvent);
-                    console.log('[Utmify] MouseEvent disparado');
-                    
-                    // Método 3: Submit do formulário (pode ser o que Utmify detecta)
-                    setTimeout(() => {
-                        const submitEvent = new Event('submit', {
-                            bubbles: true,
-                            cancelable: true
-                        });
-                        utmifyForm.dispatchEvent(submitEvent);
-                        console.log('[Utmify] Submit event disparado');
-                    }, 100);
-                    
-                    console.log('[Utmify] Todos os eventos disparados');
-                }, 800);
-            } else {
-                console.warn('[Utmify] Formulário ou botão trigger não encontrado');
-            }
+            // Dispara evento customizado que tracking tools geralmente capturam
+            window.dispatchEvent(new CustomEvent('checkout_initiated', {
+                detail: {
+                    value: 48.70,
+                    currency: 'BRL',
+                    payment_id: paymentData.id
+                }
+            }));
+            console.log('[Utmify] CustomEvent checkout_initiated disparado');
+            
         } catch (error) {
-            console.error('[Utmify] Erro ao disparar evento:', error);
+            console.error('[Utmify] Erro ao disparar eventos:', error);
         }
         
         // Busca userData para passar para a tela
