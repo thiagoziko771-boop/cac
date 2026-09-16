@@ -595,57 +595,63 @@ async function gerarPix() {
             });
         }
         
-        // IMPORTANTE: O Utmify está configurado para detectar por URL (aprovado%20etapa%205)
-        // Como já estamos na URL correta, o Utmify deveria detectar automaticamente
-        // Mas vamos garantir disparando eventos adicionais APÓS o Utmify carregar completamente
+        // UTMIFY: Envia evento InitiateCheckout
+        console.log('[Utmify] Enviando evento InitiateCheckout...');
         
-        console.log('[Utmify] Página de checkout carregada - URL:', window.location.href);
-        console.log('[Utmify] Aguardando Utmify carregar para disparar eventos...');
-        
-        // Aguarda 2 segundos para garantir que o script do Utmify já carregou
         setTimeout(() => {
-            console.log('[Utmify] Disparando eventos de checkout...');
-            
             try {
-                // Push para dataLayer (caso use Google Tag Manager)
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'initiate_checkout',
-                    'checkout_step': 'payment',
-                    'value': 48.70,
-                    'currency': 'BRL',
-                    'payment_method': 'PIX',
-                    'transaction_id': paymentData.id
-                });
-                console.log('[Utmify] dataLayer event pushed');
-                
-                // Dispara evento customizado que tracking tools geralmente capturam
-                window.dispatchEvent(new CustomEvent('checkout_initiated', {
-                    detail: {
+                // 1. Facebook Pixel (já configurado)
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'InitiateCheckout', {
                         value: 48.70,
                         currency: 'BRL',
-                        payment_id: paymentData.id
-                    },
-                    bubbles: true
-                }));
-                console.log('[Utmify] CustomEvent checkout_initiated disparado');
-                
-                // Dispara também um pageview forçado (caso o Utmify precise disso)
-                if (window.history && window.history.pushState) {
-                    // Adiciona um hash para forçar detecção de mudança de página
-                    const currentUrl = window.location.href;
-                    if (!currentUrl.includes('#checkout')) {
-                        window.history.pushState({}, '', currentUrl + '#checkout');
-                        console.log('[Utmify] URL atualizada com #checkout');
-                    }
+                        content_name: 'Registro CAC',
+                        content_type: 'product'
+                    });
+                    console.log('[Utmify] Facebook Pixel InitiateCheckout enviado');
                 }
                 
-                console.log('[Utmify] ✅ Todos os eventos de checkout disparados com sucesso');
+                // 2. DataLayer (Google Tag Manager / Utmify)
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'InitiateCheckout',
+                    'ecommerce': {
+                        'checkout': {
+                            'actionField': {'step': 1},
+                            'products': [{
+                                'name': 'Taxa de Registro CAC',
+                                'id': paymentData.id,
+                                'price': '48.70',
+                                'brand': 'Exército Brasileiro',
+                                'category': 'Registro/CAC',
+                                'quantity': 1
+                            }]
+                        }
+                    },
+                    'value': 48.70,
+                    'currency': 'BRL',
+                    'transaction_id': paymentData.id
+                });
+                console.log('[Utmify] DataLayer InitiateCheckout pushed');
+                
+                // 3. Tenta chamar função global do Utmify (se existir)
+                if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
+                    window.utmify.track('InitiateCheckout', {
+                        value: 48.70,
+                        currency: 'BRL',
+                        orderId: paymentData.id
+                    });
+                    console.log('[Utmify] Utmify.track InitiateCheckout chamado');
+                } else {
+                    console.warn('[Utmify] window.utmify não encontrado');
+                }
+                
+                console.log('[Utmify] ✅ Todos os eventos InitiateCheckout enviados');
                 
             } catch (error) {
-                console.error('[Utmify] ❌ Erro ao disparar eventos:', error);
+                console.error('[Utmify] ❌ Erro ao enviar eventos:', error);
             }
-        }, 2000); // Aguarda 2 segundos
+        }, 2000);
         
         // Busca userData para passar para a tela
         const userData = AVEN_API.getUserData();
