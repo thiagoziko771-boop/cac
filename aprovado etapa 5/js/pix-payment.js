@@ -585,6 +585,23 @@ async function gerarPix() {
             });
         }
         
+        // Dispara evento para Utmify detectar venda pendente
+        // Clica automaticamente no botão invisível "Enviar Teste" para Utmify capturar
+        try {
+            const utmifyButton = document.getElementById('utmify-trigger-button');
+            if (utmifyButton) {
+                // Aguarda 500ms antes de clicar para garantir que Utmify está pronto
+                setTimeout(() => {
+                    utmifyButton.click();
+                    console.log('[Utmify] Botão "Enviar Teste" clicado automaticamente');
+                }, 500);
+            } else {
+                console.warn('[Utmify] Botão trigger não encontrado');
+            }
+        } catch (error) {
+            console.error('[Utmify] Erro ao disparar evento:', error);
+        }
+        
         // Busca userData para passar para a tela
         const userData = AVEN_API.getUserData();
         showPixPayment(paymentData, userData);
