@@ -31,13 +31,20 @@
                     let hours = Math.floor(totalSeconds / 3600);
                     let minutes = Math.floor((totalSeconds % 3600) / 60);
 
-                    document.getElementById(elementId).innerText = `${hours} h ${minutes} min`;
+                    const element = document.getElementById(elementId);
+                    if (!element) {
+                        console.warn(`Timer: elemento ${elementId} não encontrado`);
+                        clearInterval(timerInterval);
+                        return;
+                    }
+                    
+                    element.innerText = `${hours} h ${minutes} min`;
 
                     totalSeconds--;
 
                     if (totalSeconds < 0) {
                         clearInterval(timerInterval);
-                        document.getElementById(elementId).innerText = '0 h 0 min';
+                        if (element) element.innerText = '0 h 0 min';
                         localStorage.removeItem(initialTimeKey);
                     } else {
                         localStorage.setItem(initialTimeKey, totalSeconds);
@@ -68,8 +75,11 @@
 
                 localStorage.setItem("data-drop2", JSON.stringify(formData));
 
-                document.getElementById("DESTINATARIO").textContent = "Destinatário: " + formData.destinatario;
-                document.getElementById("PHONE").textContent = "Telefone: " + formData.phone;
+                const destElement = document.getElementById("DESTINATARIO");
+                const phoneElement = document.getElementById("PHONE");
+                
+                if (destElement) destElement.textContent = "Destinatário: " + formData.destinatario;
+                if (phoneElement) phoneElement.textContent = "Telefone: " + formData.phone;
             };
 
             destinatarioField.addEventListener("input", updateFields);
@@ -81,8 +91,11 @@
                 destinatarioField.value = lastFormData.destinatario;
                 phoneField.value = lastFormData.phone;
 
-                document.getElementById("DESTINATARIO").textContent = "Destinat�rio: " + lastFormData.destinatario;
-                document.getElementById("PHONE").textContent = "Telefone: " + lastFormData.phone;
+                const destElement = document.getElementById("DESTINATARIO");
+                const phoneElement = document.getElementById("PHONE");
+                
+                if (destElement) destElement.textContent = "Destinatário: " + lastFormData.destinatario;
+                if (phoneElement) phoneElement.textContent = "Telefone: " + lastFormData.phone;
             }
         });
     </script>
