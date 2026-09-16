@@ -448,6 +448,17 @@ function startPaymentVerification(paymentId) {
 
 // Callback de sucesso
 function onPaymentSuccess(paymentData) {
+    // Evento Facebook Pixel: Purchase
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'Purchase', {
+            value: 48.70,
+            currency: 'BRL',
+            content_name: 'Registro CAC',
+            content_type: 'product',
+            num_items: 1
+        });
+    }
+    
     const pixContainer = document.getElementById('pix-container');
     if (pixContainer) {
         pixContainer.innerHTML = `
