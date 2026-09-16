@@ -3,6 +3,10 @@
  * API Key: d_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw
  */
 
+console.log('=== PIX PAYMENT SCRIPT CARREGADO ===');
+console.log('Timestamp:', new Date().toISOString());
+console.log('URL atual:', window.location.href);
+
 const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
     apiKey: 'd_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw',
@@ -516,6 +520,9 @@ function onPaymentError(message) {
 
 // Inicialização ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== PIX: DOMContentLoaded disparado ===');
+    console.log('Iniciando verificação e geração automática de PIX...');
+    
     // Evento Facebook Pixel: InitiateCheckout
     if (typeof fbq !== 'undefined') {
         fbq('track', 'InitiateCheckout', {
@@ -524,6 +531,9 @@ document.addEventListener('DOMContentLoaded', function() {
             content_name: 'Registro CAC',
             content_type: 'product'
         });
+        console.log('[Facebook Pixel] InitiateCheckout enviado');
+    } else {
+        console.warn('[Facebook Pixel] fbq não está definido');
     }
     
     // Verifica se já existe um pagamento pendente
