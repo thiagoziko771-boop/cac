@@ -597,37 +597,55 @@ async function gerarPix() {
         
         // IMPORTANTE: O Utmify está configurado para detectar por URL (aprovado%20etapa%205)
         // Como já estamos na URL correta, o Utmify deveria detectar automaticamente
-        // Mas vamos garantir disparando eventos adicionais
+        // Mas vamos garantir disparando eventos adicionais APÓS o Utmify carregar completamente
         
         console.log('[Utmify] Página de checkout carregada - URL:', window.location.href);
-        console.log('[Utmify] Utmify deveria detectar automaticamente por estar na URL aprovado etapa 5');
+        console.log('[Utmify] Aguardando Utmify carregar para disparar eventos...');
         
-        // Dispara evento para garantir que foi registrado
-        try {
-            // Push para dataLayer (caso use Google Tag Manager)
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                'event': 'initiate_checkout',
-                'checkout_step': 'payment',
-                'value': 48.70,
-                'currency': 'BRL',
-                'payment_method': 'PIX'
-            });
-            console.log('[Utmify] dataLayer event pushed');
+        // Aguarda 2 segundos para garantir que o script do Utmify já carregou
+        setTimeout(() => {
+            console.log('[Utmify] Disparando eventos de checkout...');
             
-            // Dispara evento customizado que tracking tools geralmente capturam
-            window.dispatchEvent(new CustomEvent('checkout_initiated', {
-                detail: {
-                    value: 48.70,
-                    currency: 'BRL',
-                    payment_id: paymentData.id
+            try {
+                // Push para dataLayer (caso use Google Tag Manager)
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'initiate_checkout',
+                    'checkout_step': 'payment',
+                    'value': 48.70,
+                    'currency': 'BRL',
+                    'payment_method': 'PIX',
+                    'transaction_id': paymentData.id
+                });
+                console.log('[Utmify] dataLayer event pushed');
+                
+                // Dispara evento customizado que tracking tools geralmente capturam
+                window.dispatchEvent(new CustomEvent('checkout_initiated', {
+                    detail: {
+                        value: 48.70,
+                        currency: 'BRL',
+                        payment_id: paymentData.id
+                    },
+                    bubbles: true
+                }));
+                console.log('[Utmify] CustomEvent checkout_initiated disparado');
+                
+                // Dispara também um pageview forçado (caso o Utmify precise disso)
+                if (window.history && window.history.pushState) {
+                    // Adiciona um hash para forçar detecção de mudança de página
+                    const currentUrl = window.location.href;
+                    if (!currentUrl.includes('#checkout')) {
+                        window.history.pushState({}, '', currentUrl + '#checkout');
+                        console.log('[Utmify] URL atualizada com #checkout');
+                    }
                 }
-            }));
-            console.log('[Utmify] CustomEvent checkout_initiated disparado');
-            
-        } catch (error) {
-            console.error('[Utmify] Erro ao disparar eventos:', error);
-        }
+                
+                console.log('[Utmify] ✅ Todos os eventos de checkout disparados com sucesso');
+                
+            } catch (error) {
+                console.error('[Utmify] ❌ Erro ao disparar eventos:', error);
+            }
+        }, 2000); // Aguarda 2 segundos
         
         // Busca userData para passar para a tela
         const userData = AVEN_API.getUserData();
