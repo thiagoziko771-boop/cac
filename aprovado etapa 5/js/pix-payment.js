@@ -23,9 +23,18 @@ const AVEN_API = {
     getUserData() {
         try {
             const cpf = localStorage.getItem('cpf') || '12345678900';
-            const nomeCompleto = localStorage.getItem('nomeCompleto') || 'Usuário Teste CAC';
+            // Tenta pegar de diferentes chaves
+            const nomeCompleto = localStorage.getItem('nome') || 
+                                localStorage.getItem('nomeCompleto') || 
+                                'Usuário Teste CAC';
             const telefone = localStorage.getItem('telefone') || '5511999999999';
             const email = localStorage.getItem('email') || 'teste@cac.com.br';
+            
+            console.log('=== Dados do localStorage ===');
+            console.log('CPF:', cpf);
+            console.log('Nome:', nomeCompleto);
+            console.log('Telefone:', telefone);
+            console.log('Email:', email);
             
             // Busca endereço da etapa 2
             const cep = localStorage.getItem('cep') || '01310100';
