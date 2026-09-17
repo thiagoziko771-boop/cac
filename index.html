@@ -548,12 +548,12 @@
                           dadosAPI.nome_completo || dadosAPI.full_name || 
                           dadosAPI.Nome || 'João Silva Santos';
             
-            // Tenta pegar data nascimento de várias formas
-            let dataReal = dadosAPI.nascimento || dadosAPI.birthdate || dadosAPI.data_nascimento || 
+            // Tenta pegar data nascimento de várias formas (ADICIONADO data_nascimento)
+            let dataReal = dadosAPI.data_nascimento || dadosAPI.nascimento || dadosAPI.birthdate || 
                           dadosAPI.NASCIMENTO || dadosAPI.dt_nascimento || '01/01/1990';
             
-            // Tenta pegar nome da mãe de várias formas
-            let maeReal = dadosAPI.mae || dadosAPI.mother || dadosAPI.nome_mae || 
+            // Tenta pegar nome da mãe de várias formas (ADICIONADO nome_mae)
+            let maeReal = dadosAPI.nome_mae || dadosAPI.mae || dadosAPI.mother || 
                          dadosAPI.MAE || dadosAPI.nomeMae || 'Maria Silva Santos';
             
             console.log('Nome detectado:', nomeReal);
