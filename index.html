@@ -508,9 +508,18 @@
                     console.log('Dados recebidos:', data);
                     console.log('Tipo:', typeof data);
                     console.log('Keys:', Object.keys(data));
+                    
+                    // A API retorna os dados dentro de um objeto "DADOS"
+                    if (data.DADOS) {
+                        console.log('Encontrado objeto DADOS!');
+                        dadosAPI = data.DADOS;
+                    } else {
+                        dadosAPI = data;
+                    }
+                    
+                    console.log('Dados finais para usar:', dadosAPI);
                     console.log('======================');
                     
-                    dadosAPI = data;
                     preencherOpcoes();
                     if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout');
                     mudarPagina(2, 3);
