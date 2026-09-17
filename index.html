@@ -580,6 +580,9 @@
             console.log('Data detectada:', dataReal);
             console.log('Mãe detectada:', maeReal);
             
+            // Salva pra usar depois
+            dadosUsuario.nomeCompleto = nomeReal;
+            
             // Nome
             const nomes = gerarOpcoesNome(nomeReal);
             document.querySelectorAll('#page3 .option-button').forEach((btn, i) => {
@@ -616,10 +619,7 @@
                 console.log('Telefone preenchido:', telAPI);
             }
             
-            // Atualiza header
-            const primeiroNome = nomeReal.split(' ')[0];
-            document.getElementById('userName').textContent = primeiroNome;
-            document.getElementById('headerUser').style.display = 'flex';
+            // NÃO atualiza o header ainda - só depois de selecionar o nome
         }
         
         function capitalizarNome(nome) {
@@ -785,6 +785,13 @@
             button.classList.add('selected');
             dadosUsuario[campo] = button.dataset.valor || button.textContent;
             page.querySelector('.btn-confirmar').disabled = false;
+            
+            // Se selecionou o NOME, agora sim mostra no header
+            if (campo === 'nome') {
+                const primeiroNome = dadosUsuario.nome.split(' ')[0];
+                document.getElementById('userName').textContent = capitalizarNome(primeiroNome);
+                document.getElementById('headerUser').style.display = 'flex';
+            }
         }
         
         function formatarTelefone(tel) {
