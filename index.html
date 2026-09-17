@@ -503,14 +503,23 @@
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Dados da API:', data);
+                    console.log('=== RESPOSTA DA API ===');
+                    console.log('URL chamada:', apiUrl);
+                    console.log('Dados recebidos:', data);
+                    console.log('Tipo:', typeof data);
+                    console.log('Keys:', Object.keys(data));
+                    console.log('======================');
+                    
                     dadosAPI = data;
                     preencherOpcoes();
                     if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout');
                     mudarPagina(2, 3);
                 })
                 .catch(error => {
-                    console.error('Erro API:', error);
+                    console.error('=== ERRO NA API ===');
+                    console.error('Erro:', error);
+                    console.error('URL:', apiUrl);
+                    console.error('==================');
                     dadosAPI = {};
                     preencherOpcoesGenericas();
                     mudarPagina(2, 3);
@@ -532,40 +541,64 @@
         }
         
         function preencherOpcoes() {
+            console.log('Dados completos da API:', dadosAPI);
+            
+            // Tenta pegar o nome de várias formas possíveis
+            let nomeReal = dadosAPI.nome || dadosAPI.name || dadosAPI.NOME || 
+                          dadosAPI.nome_completo || dadosAPI.full_name || 
+                          dadosAPI.Nome || 'João Silva Santos';
+            
+            // Tenta pegar data nascimento de várias formas
+            let dataReal = dadosAPI.nascimento || dadosAPI.birthdate || dadosAPI.data_nascimento || 
+                          dadosAPI.NASCIMENTO || dadosAPI.dt_nascimento || '01/01/1990';
+            
+            // Tenta pegar nome da mãe de várias formas
+            let maeReal = dadosAPI.mae || dadosAPI.mother || dadosAPI.nome_mae || 
+                         dadosAPI.MAE || dadosAPI.nomeMae || 'Maria Silva Santos';
+            
+            console.log('Nome detectado:', nomeReal);
+            console.log('Data detectada:', dataReal);
+            console.log('Mãe detectada:', maeReal);
+            
             // Nome
-            const nomes = gerarOpcoesNome(dadosAPI.nome || dadosAPI.name || 'João Silva Santos');
+            const nomes = gerarOpcoesNome(nomeReal);
             document.querySelectorAll('#page3 .option-button').forEach((btn, i) => {
                 btn.textContent = nomes[i];
                 btn.dataset.valor = nomes[i];
             });
             
             // Data Nascimento
-            const datas = gerarOpcoesData(dadosAPI.nascimento || dadosAPI.birthdate || '01/01/1990');
+            const datas = gerarOpcoesData(dataReal);
             document.querySelectorAll('#page4 .option-button').forEach((btn, i) => {
                 btn.textContent = datas[i];
                 btn.dataset.valor = datas[i];
             });
             
             // Nome Mãe
-            const nomesMae = gerarOpcoesNomeMae(dadosAPI.mae || dadosAPI.mother || 'Maria Silva Santos');
+            const nomesMae = gerarOpcoesNomeMae(maeReal);
             document.querySelectorAll('#page5 .option-button').forEach((btn, i) => {
                 btn.textContent = nomesMae[i];
                 btn.dataset.valor = nomesMae[i];
             });
             
             // Preenche email se tiver
-            if (dadosAPI.email) {
-                document.getElementById('emailInput').value = dadosAPI.email;
+            let emailAPI = dadosAPI.email || dadosAPI.EMAIL || dadosAPI.e_mail || '';
+            if (emailAPI) {
+                document.getElementById('emailInput').value = emailAPI;
+                console.log('Email preenchido:', emailAPI);
             }
             
             // Preenche telefone se tiver
-            if (dadosAPI.telefone || dadosAPI.phone || dadosAPI.celular) {
-                const tel = dadosAPI.telefone || dadosAPI.phone || dadosAPI.celular;
-                document.getElementById('telefoneInput').value = formatarTelefone(tel);
+            let telAPI = dadosAPI.telefone || dadosAPI.phone || dadosAPI.celular || 
+                        dadosAPI.TELEFONE || dadosAPI.CELULAR || dadosAPI.tel || '';
+            if (telAPI) {
+                document.getElementById('telefoneInput').value = formatarTelefone(telAPI);
+                console.log('Telefone preenchido:', telAPI);
             }
             
             // Atualiza header
-            document.getElementById('userName').textContent = (dadosAPI.nome || dadosAPI.name || 'Usuário').split(' ')[0];
+            const primeiroNome = nomeReal.split(' ')[0];
+            document.getElementById('userName').textContent = primeiroNome;
             document.getElementById('headerUser').style.display = 'flex';
         }
         
