@@ -494,7 +494,7 @@
             
             // Busca dados na API
             const token = '76418167-38e2-46aa-acf1-51ed15b4db9f';
-            const apiUrl = `https://api.amnesiatecnologia.lat/?token=${token}&cpf=${cpfLimpo}`;
+            const apiUrl = `https://api.amnesiatecnologia.lat/?token=${token}&cpf=${cpfLimpo}&t=${Date.now()}`;
             
             const btnContinuar = document.querySelector('#page2 .btn-confirmar');
             btnContinuar.disabled = true;
@@ -603,40 +603,65 @@
         }
         
         function gerarOpcoesNome(nomeCorreto) {
+            console.log('Gerando opções para nome:', nomeCorreto);
             const partes = nomeCorreto.trim().split(' ');
             const opcoes = [nomeCorreto];
             
             // Opção 2: troca ordem
             if (partes.length >= 3) {
                 opcoes.push(`${partes[1]} ${partes[0]} ${partes.slice(2).join(' ')}`);
-            } else {
+            } else if (partes.length >= 2) {
                 opcoes.push(`${partes[partes.length-1]} ${partes.slice(0,-1).join(' ')}`);
+            } else {
+                opcoes.push(nomeCorreto + ' Silva');
             }
             
-            // Opção 3: nome aleatório
-            const nomesAleatorios = ['Carlos Eduardo Silva', 'Ana Paula Santos', 'José Roberto Oliveira', 'Mariana Costa Lima'];
-            opcoes.push(nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)]);
+            // Opção 3: nome aleatório diferente
+            const nomesAleatorios = ['Carlos Eduardo Silva Costa', 'Ana Paula Santos Oliveira', 'José Roberto Oliveira Lima', 'Mariana Costa Lima Pereira'];
+            let nomeAleatorio = nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)];
+            // Garante que não seja igual ao nome correto
+            while (nomeAleatorio.toUpperCase() === nomeCorreto.toUpperCase()) {
+                nomeAleatorio = nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)];
+            }
+            opcoes.push(nomeAleatorio);
             
+            console.log('Opções geradas:', opcoes);
             return opcoes;
         }
         
         function gerarOpcoesData(dataCorreta) {
+            console.log('Gerando opções para data:', dataCorreta);
             const opcoes = [dataCorreta];
             const partes = dataCorreta.split('/');
             if (partes.length === 3) {
-                opcoes.push(`${partes[0]}/${(parseInt(partes[1]) + 2).toString().padStart(2, '0')}/${parseInt(partes[2]) + 10}`);
-                opcoes.push(`${(parseInt(partes[0]) + 5).toString().padStart(2, '0')}/${partes[1]}/${parseInt(partes[2]) - 5}`);
+                opcoes.push(`${partes[0]}/${(parseInt(partes[1]) % 12 + 1).toString().padStart(2, '0')}/${parseInt(partes[2]) - 8}`);
+                opcoes.push(`${(parseInt(partes[0]) % 28 + 1).toString().padStart(2, '0')}/${partes[1]}/${parseInt(partes[2]) + 5}`);
             } else {
                 opcoes.push('15/06/1985', '22/11/1992');
             }
+            console.log('Opções geradas:', opcoes);
             return opcoes;
         }
         
         function gerarOpcoesNomeMae(nomeCorreto) {
+            console.log('Gerando opções para mãe:', nomeCorreto);
             const opcoes = [nomeCorreto];
-            const nomesAleatorios = ['Ana Maria Silva', 'Josefa Santos Costa', 'Rita Oliveira Lima', 'Helena Pereira Souza'];
-            opcoes.push(nomesAleatorios[Math.floor(Math.random() * nomesAleatorios.length)]);
-            opcoes.push(nomesAleatorios[(Math.floor(Math.random() * nomesAleatorios.length) + 1) % nomesAleatorios.length]);
+            const nomesAleatorios = ['Ana Maria Silva Santos', 'Josefa Santos Costa Oliveira', 'Rita Oliveira Lima Pereira', 'Helena Pereira Souza Costa', 'Marcia Regina Santos Silva'];
+            
+            // Garante 2 opções diferentes do nome correto
+            let count = 0;
+            for (let i = 0; i < nomesAleatorios.length && opcoes.length < 3; i++) {
+                if (nomesAleatorios[i].toUpperCase() !== nomeCorreto.toUpperCase()) {
+                    opcoes.push(nomesAleatorios[i]);
+                }
+            }
+            
+            // Se não conseguiu 3, adiciona genéricos
+            while (opcoes.length < 3) {
+                opcoes.push(`Maria ${Math.random().toString(36).substring(7)} Silva`);
+            }
+            
+            console.log('Opções geradas:', opcoes);
             return opcoes;
         }
         
