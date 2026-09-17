@@ -987,9 +987,17 @@ src="https://www.facebook.com/tr?id=1532671745295740&ev=PageView&noscript=1"
 
                 // Recuperar dados do localStorage
                 const cpf = localStorage.getItem('cpf') || 'CPF não disponível';
-                const nomeCompleto = localStorage.getItem('nomeCompleto') || 'Nome não disponível';
+                const nomeCompleto = localStorage.getItem('nome') || 
+                                    localStorage.getItem('nomeCompleto') || 
+                                    'Nome não disponível';
                 const telefone = localStorage.getItem('telefone') || 'Telefone não disponível';
                 const email = localStorage.getItem('email') || 'Email não disponível';
+                
+                console.log('=== Dados para o documento ===');
+                console.log('CPF:', cpf);
+                console.log('Nome:', nomeCompleto);
+                console.log('Telefone:', telefone);
+                console.log('Email:', email);
 
                 // Exibir o nome completo e o CPF nos textos sobrepostos
                 document.getElementById('text-overlay-1').textContent = nomeCompleto;
