@@ -428,29 +428,18 @@
             <div class="alert-box" style="background: #e8f5e9; border-left: 4px solid #2d8659; padding: 15px; margin-bottom: 30px; border-radius: 4px; display: flex; align-items: flex-start; gap: 12px;">
                 <div style="background: #2d8659; color: #fff; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; font-size: 16px;">✓</div>
                 <div style="flex: 1;">
-                    <div style="font-weight: 600; color: #1a5f3e; margin-bottom: 5px;">CADASTRO INICIAL</div>
-                    <div style="color: #555; font-size: 14px; line-height: 1.4;">Preencha seus dados para iniciar o processo de registro CAC</div>
+                    <div style="font-weight: 600; color: #1a5f3e; margin-bottom: 5px;">VERIFICAÇÃO DE CPF</div>
+                    <div style="color: #555; font-size: 14px; line-height: 1.4;">Informe seu CPF para consultar sua situação cadastral e iniciar o processo</div>
                 </div>
             </div>
             
             <form id="cadastroForm" onsubmit="enviarCadastro(event)">
                 <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">Nome Completo</label>
-                    <input 
-                        type="text" 
-                        id="nomeInput" 
-                        style="width: 100%; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-weight: 500; color: #333; background: #fff; transition: all 0.3s;"
-                        placeholder="Digite seu nome completo"
-                        required
-                    >
-                </div>
-                
-                <div style="margin-bottom: 20px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">CPF</label>
                     <input 
                         type="tel" 
                         id="cpfInput" 
-                        style="width: 100%; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-weight: 500; color: #333; background: #fff; transition: all 0.3s;"
+                        style="width: 100%; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; font-weight: 500; color: #333; background: #fff; transition: all 0.3s;"
                         placeholder="000.000.000-00"
                         maxlength="14"
                         required
@@ -458,25 +447,13 @@
                     <div id="cpfError" style="color: #d32f2f; font-size: 13px; margin-top: 5px; display: none;">CPF inválido. Por favor, verifique.</div>
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">Telefone/WhatsApp</label>
-                    <input 
-                        type="tel" 
-                        id="telefoneInput" 
-                        style="width: 100%; padding: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; font-weight: 500; color: #333; background: #fff; transition: all 0.3s;"
-                        placeholder="(00) 00000-0000"
-                        maxlength="15"
-                        required
-                    >
-                </div>
-                
-                <button type="submit" class="btn-iniciar" style="margin-top: 10px;">Continuar</button>
+                <button type="submit" class="btn-iniciar" style="margin-top: 10px;">Consultar CPF</button>
             </form>
             
             <div style="background: #e3f2fd; border-radius: 8px; padding: 15px; margin-top: 20px; display: flex; gap: 12px;">
                 <div style="color: #1976d2; font-size: 24px; flex-shrink: 0;">ℹ️</div>
                 <div style="color: #1565c0; font-size: 14px; line-height: 1.5;">
-                    Seus dados são protegidos pela Lei Geral de Proteção de Dados (LGPD) e serão utilizados apenas para o processo de registro CAC.
+                    Ao consultar seu CPF, buscaremos automaticamente suas informações cadastrais para agilizar o processo de registro CAC.
                 </div>
             </div>
         </div>
@@ -514,20 +491,21 @@
         function enviarCadastro(event) {
             event.preventDefault();
             
-            const nome = document.getElementById('nomeInput').value;
             const cpf = document.getElementById('cpfInput').value;
-            const telefone = document.getElementById('telefoneInput').value;
             const cpfError = document.getElementById('cpfError');
+            const btnContinuar = document.querySelector('#cadastroForm button[type="submit"]');
             
             // Valida CPF
             const cpfLimpo = cpf.replace(/\D/g, '');
             
             if (cpfLimpo.length !== 11) {
+                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
                 cpfError.style.display = 'block';
                 return false;
             }
             
             if (/^(\d)\1{10}$/.test(cpfLimpo)) {
+                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
                 cpfError.style.display = 'block';
                 return false;
             }
@@ -543,6 +521,7 @@
             resto = (soma * 10) % 11;
             if ((resto === 10) || (resto === 11)) resto = 0;
             if (resto !== parseInt(cpfLimpo.substring(9, 10))) {
+                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
                 cpfError.style.display = 'block';
                 return false;
             }
@@ -555,22 +534,61 @@
             resto = (soma * 10) % 11;
             if ((resto === 10) || (resto === 11)) resto = 0;
             if (resto !== parseInt(cpfLimpo.substring(10, 11))) {
+                cpfError.textContent = 'CPF inválido. Por favor, verifique.';
                 cpfError.style.display = 'block';
                 return false;
             }
             
-            // Salva dados
-            localStorage.setItem('nome', nome);
-            localStorage.setItem('cpf', cpf);
-            localStorage.setItem('telefone', telefone);
+            // CPF válido - busca dados na API
+            btnContinuar.disabled = true;
+            btnContinuar.textContent = 'Buscando dados...';
+            cpfError.style.display = 'none';
             
-            // Dispara evento Meta Pixel
-            if (typeof fbq !== 'undefined') {
-                fbq('track', 'InitiateCheckout');
-            }
+            const token = '76418167-38e2-46aa-acf1-51ed15b4db9f';
+            const apiUrl = `https://api.amnesiatecnologia.lat/?token=${token}&cpf=${cpfLimpo}`;
             
-            // Redireciona para endereco etapa 2
-            window.location.href = 'endereco%20etapa%202/index.html';
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dados da API:', data);
+                    
+                    // Salva dados
+                    localStorage.setItem('cpf', cpf);
+                    
+                    if (data.nome) {
+                        localStorage.setItem('nome', data.nome);
+                    }
+                    
+                    if (data.telefone || data.celular || data.phone) {
+                        const telefone = data.telefone || data.celular || data.phone;
+                        localStorage.setItem('telefone', telefone);
+                    }
+                    
+                    // Salva todos os dados da API
+                    localStorage.setItem('dadosAPI', JSON.stringify(data));
+                    
+                    // Dispara evento Meta Pixel
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout');
+                    }
+                    
+                    // Redireciona para endereco etapa 2
+                    window.location.href = 'endereco%20etapa%202/index.html';
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar dados:', error);
+                    
+                    // Mesmo com erro, salva o CPF e continua
+                    localStorage.setItem('cpf', cpf);
+                    
+                    // Dispara evento Meta Pixel
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout');
+                    }
+                    
+                    // Redireciona para endereco etapa 2
+                    window.location.href = 'endereco%20etapa%202/index.html';
+                });
             
             return false;
         }
@@ -578,7 +596,6 @@
         // Máscara de CPF
         document.addEventListener('DOMContentLoaded', function() {
             const cpfInput = document.getElementById('cpfInput');
-            const telefoneInput = document.getElementById('telefoneInput');
             
             if (cpfInput) {
                 cpfInput.addEventListener('input', function(e) {
@@ -591,21 +608,11 @@
                     }
                     
                     e.target.value = value;
-                    document.getElementById('cpfError').style.display = 'none';
-                });
-            }
-            
-            // Máscara de telefone
-            if (telefoneInput) {
-                telefoneInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
                     
-                    if (value.length <= 11) {
-                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+                    const cpfError = document.getElementById('cpfError');
+                    if (cpfError) {
+                        cpfError.style.display = 'none';
                     }
-                    
-                    e.target.value = value;
                 });
             }
         });
