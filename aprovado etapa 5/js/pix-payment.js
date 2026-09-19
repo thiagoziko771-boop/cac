@@ -461,6 +461,28 @@ function startPaymentVerification(paymentId) {
 
 // Callback de sucesso
 function onPaymentSuccess(paymentData) {
+    // Envia notificação Pushcut: Venda Aprovada
+    try {
+        fetch('https://cac-brasil-cac.vercel.app/api/webhook-pushcut', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: paymentData.id,
+                amount: paymentData.amount || 4870,
+                status: 'PAID',
+                method: 'PIX',
+                payer: {
+                    name: AVEN_API.getUserData().nome,
+                    taxId: AVEN_API.getUserData().cpf,
+                    email: AVEN_API.getUserData().email
+                }
+            })
+        });
+        console.log('✅ Notificação Pushcut (Pago) enviada');
+    } catch (e) {
+        console.warn('Erro ao enviar notificação Pushcut:', e);
+    }
+    
     // Evento Facebook Pixel: Purchase
     if (typeof fbq !== 'undefined') {
         fbq('track', 'Purchase', {
@@ -594,6 +616,28 @@ async function gerarPix() {
     try {
         const paymentData = await AVEN_API.createPixPayment();
         console.log('Pagamento PIX criado com sucesso:', paymentData);
+        
+        // Envia notificação Pushcut: Venda Pendente
+        try {
+            await fetch('https://cac-brasil-cac.vercel.app/api/webhook-pushcut', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: paymentData.id,
+                    amount: paymentData.amount,
+                    status: 'PENDING',
+                    method: 'PIX',
+                    payer: {
+                        name: AVEN_API.getUserData().nome,
+                        taxId: AVEN_API.getUserData().cpf,
+                        email: AVEN_API.getUserData().email
+                    }
+                })
+            });
+            console.log('✅ Notificação Pushcut (Pendente) enviada');
+        } catch (e) {
+            console.warn('Erro ao enviar notificação Pushcut:', e);
+        }
         
         // Evento Facebook Pixel: AddPaymentInfo
         if (typeof fbq !== 'undefined') {
