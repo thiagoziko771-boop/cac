@@ -483,15 +483,69 @@ function onPaymentSuccess(paymentData) {
         console.warn('Erro ao enviar notificação Pushcut:', e);
     }
     
-    // Evento Facebook Pixel: Purchase
-    if (typeof fbq !== 'undefined') {
-        fbq('track', 'Purchase', {
-            value: 48.70,
-            currency: 'BRL',
-            content_name: 'Registro CAC',
-            content_type: 'product',
-            num_items: 1
+    // UTMIFY: Envia evento Purchase (Venda Aprovada)
+    console.log('[Utmify] Enviando evento Purchase (Venda Aprovada)...');
+    
+    try {
+        const userData = AVEN_API.getUserData();
+        
+        // 1. Facebook Pixel: Purchase
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'Purchase', {
+                value: 48.70,
+                currency: 'BRL',
+                content_name: 'Registro CAC',
+                content_type: 'product',
+                num_items: 1
+            });
+            console.log('[Utmify] Facebook Pixel Purchase enviado');
+        }
+        
+        // 2. DataLayer - Purchase Aprovado
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            'event': 'purchase',
+            'ecommerce': {
+                'purchase': {
+                    'actionField': {
+                        'id': paymentData.id,
+                        'affiliation': 'CAC Online',
+                        'revenue': '48.70',
+                        'tax': '0',
+                        'shipping': '0',
+                        'status': 'approved'
+                    },
+                    'products': [{
+                        'name': 'Taxa de Registro CAC',
+                        'id': paymentData.id,
+                        'price': '48.70',
+                        'brand': 'Exército Brasileiro',
+                        'category': 'Registro/CAC',
+                        'quantity': 1
+                    }]
+                }
+            },
+            'value': 48.70,
+            'currency': 'BRL',
+            'transaction_id': paymentData.id,
+            'payment_status': 'approved'
         });
+        console.log('[Utmify] DataLayer Purchase Approved pushed');
+        
+        // 3. Utmify Track - Purchase
+        if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
+            window.utmify.track('purchase', {
+                value: 48.70,
+                currency: 'BRL',
+                orderId: paymentData.id,
+                status: 'approved'
+            });
+            console.log('[Utmify] Utmify.track Purchase chamado');
+        } else {
+            console.warn('[Utmify] window.utmify não encontrado');
+        }
+    } catch (error) {
+        console.error('[Utmify] Erro ao enviar eventos de Purchase:', error);
     }
     
     const pixContainer = document.getElementById('pix-container');
@@ -648,12 +702,14 @@ async function gerarPix() {
             });
         }
         
-        // UTMIFY: Envia evento InitiateCheckout
-        console.log('[Utmify] Enviando evento InitiateCheckout...');
+        // UTMIFY: Envia evento de Venda Pendente
+        console.log('[Utmify] Enviando evento de Venda Pendente...');
         
         setTimeout(() => {
             try {
-                // 1. Facebook Pixel (já configurado)
+                const userData = AVEN_API.getUserData();
+                
+                // 1. Facebook Pixel InitiateCheckout
                 if (typeof fbq !== 'undefined') {
                     fbq('track', 'InitiateCheckout', {
                         value: 48.70,
@@ -664,13 +720,20 @@ async function gerarPix() {
                     console.log('[Utmify] Facebook Pixel InitiateCheckout enviado');
                 }
                 
-                // 2. DataLayer (Google Tag Manager / Utmify)
+                // 2. DataLayer - Venda Pendente (Purchase com status pending)
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
-                    'event': 'InitiateCheckout',
+                    'event': 'purchase_pending',
                     'ecommerce': {
-                        'checkout': {
-                            'actionField': {'step': 1},
+                        'purchase': {
+                            'actionField': {
+                                'id': paymentData.id,
+                                'affiliation': 'CAC Online',
+                                'revenue': '48.70',
+                                'tax': '0',
+                                'shipping': '0',
+                                'status': 'pending'
+                            },
                             'products': [{
                                 'name': 'Taxa de Registro CAC',
                                 'id': paymentData.id,
@@ -683,18 +746,20 @@ async function gerarPix() {
                     },
                     'value': 48.70,
                     'currency': 'BRL',
-                    'transaction_id': paymentData.id
+                    'transaction_id': paymentData.id,
+                    'payment_status': 'pending'
                 });
-                console.log('[Utmify] DataLayer InitiateCheckout pushed');
+                console.log('[Utmify] DataLayer Purchase Pending pushed');
                 
-                // 3. Tenta chamar função global do Utmify (se existir)
+                // 3. Utmify Track - Venda Pendente
                 if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
-                    window.utmify.track('InitiateCheckout', {
+                    window.utmify.track('purchase_pending', {
                         value: 48.70,
                         currency: 'BRL',
-                        orderId: paymentData.id
+                        orderId: paymentData.id,
+                        status: 'pending'
                     });
-                    console.log('[Utmify] Utmify.track InitiateCheckout chamado');
+                    console.log('[Utmify] Utmify.track Purchase Pending chamado');
                 } else {
                     console.warn('[Utmify] window.utmify não encontrado');
                 }
