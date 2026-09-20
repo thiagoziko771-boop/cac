@@ -1,11 +1,13 @@
 /**
  * Integração com API AvenPayments - PIX
  * API Key: d_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw
+ * VERSÃO: 2.0 - Com eventos Utmify integrados
  */
 
-console.log('=== PIX PAYMENT SCRIPT CARREGADO ===');
+console.log('=== PIX PAYMENT SCRIPT CARREGADO - VERSÃO 2.0 ===');
 console.log('Timestamp:', new Date().toISOString());
 console.log('URL atual:', window.location.href);
+console.log('✅ EVENTOS UTMIFY: Ativos e configurados');
 
 const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
