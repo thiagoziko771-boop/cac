@@ -1,13 +1,11 @@
 /**
  * Integração com API AvenPayments - PIX
  * API Key: d_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw
- * VERSÃO: 2.0 - Com eventos Utmify integrados
  */
 
-console.log('=== PIX PAYMENT SCRIPT CARREGADO - VERSÃO 2.0 ===');
+console.log('=== PIX PAYMENT SCRIPT CARREGADO ===');
 console.log('Timestamp:', new Date().toISOString());
 console.log('URL atual:', window.location.href);
-console.log('✅ EVENTOS UTMIFY: Ativos e configurados');
 
 const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
@@ -485,69 +483,15 @@ function onPaymentSuccess(paymentData) {
         console.warn('Erro ao enviar notificação Pushcut:', e);
     }
     
-    // UTMIFY: Envia evento Purchase (Venda Aprovada)
-    console.log('[Utmify] Enviando evento Purchase (Venda Aprovada)...');
-    
-    try {
-        const userData = AVEN_API.getUserData();
-        
-        // 1. Facebook Pixel: Purchase
-        if (typeof fbq !== 'undefined') {
-            fbq('track', 'Purchase', {
-                value: 48.70,
-                currency: 'BRL',
-                content_name: 'Registro CAC',
-                content_type: 'product',
-                num_items: 1
-            });
-            console.log('[Utmify] Facebook Pixel Purchase enviado');
-        }
-        
-        // 2. DataLayer - Purchase Aprovado
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-            'event': 'purchase',
-            'ecommerce': {
-                'purchase': {
-                    'actionField': {
-                        'id': paymentData.id,
-                        'affiliation': 'CAC Online',
-                        'revenue': '48.70',
-                        'tax': '0',
-                        'shipping': '0',
-                        'status': 'approved'
-                    },
-                    'products': [{
-                        'name': 'Taxa de Registro CAC',
-                        'id': paymentData.id,
-                        'price': '48.70',
-                        'brand': 'Exército Brasileiro',
-                        'category': 'Registro/CAC',
-                        'quantity': 1
-                    }]
-                }
-            },
-            'value': 48.70,
-            'currency': 'BRL',
-            'transaction_id': paymentData.id,
-            'payment_status': 'approved'
+    // Evento Facebook Pixel: Purchase
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'Purchase', {
+            value: 48.70,
+            currency: 'BRL',
+            content_name: 'Registro CAC',
+            content_type: 'product',
+            num_items: 1
         });
-        console.log('[Utmify] DataLayer Purchase Approved pushed');
-        
-        // 3. Utmify Track - Purchase
-        if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
-            window.utmify.track('purchase', {
-                value: 48.70,
-                currency: 'BRL',
-                orderId: paymentData.id,
-                status: 'approved'
-            });
-            console.log('[Utmify] Utmify.track Purchase chamado');
-        } else {
-            console.warn('[Utmify] window.utmify não encontrado');
-        }
-    } catch (error) {
-        console.error('[Utmify] Erro ao enviar eventos de Purchase:', error);
     }
     
     const pixContainer = document.getElementById('pix-container');
@@ -704,38 +648,29 @@ async function gerarPix() {
             });
         }
         
-        // UTMIFY: Envia evento Purchase (Venda Pendente)
-        console.log('[Utmify] Enviando evento Purchase para Venda Pendente...');
+        // UTMIFY: Envia evento InitiateCheckout
+        console.log('[Utmify] Enviando evento InitiateCheckout...');
         
         setTimeout(() => {
             try {
-                const userData = AVEN_API.getUserData();
-                
-                // 1. Facebook Pixel: Purchase (Utmify vai detectar como pendente)
+                // 1. Facebook Pixel (já configurado)
                 if (typeof fbq !== 'undefined') {
-                    fbq('track', 'Purchase', {
+                    fbq('track', 'InitiateCheckout', {
                         value: 48.70,
                         currency: 'BRL',
                         content_name: 'Registro CAC',
-                        content_type: 'product',
-                        num_items: 1
+                        content_type: 'product'
                     });
-                    console.log('[Utmify] Facebook Pixel Purchase enviado (pendente)');
+                    console.log('[Utmify] Facebook Pixel InitiateCheckout enviado');
                 }
                 
-                // 2. DataLayer - Purchase
+                // 2. DataLayer (Google Tag Manager / Utmify)
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
-                    'event': 'purchase',
+                    'event': 'InitiateCheckout',
                     'ecommerce': {
-                        'purchase': {
-                            'actionField': {
-                                'id': paymentData.id,
-                                'affiliation': 'CAC Online',
-                                'revenue': '48.70',
-                                'tax': '0',
-                                'shipping': '0'
-                            },
+                        'checkout': {
+                            'actionField': {'step': 1},
                             'products': [{
                                 'name': 'Taxa de Registro CAC',
                                 'id': paymentData.id,
@@ -750,10 +685,24 @@ async function gerarPix() {
                     'currency': 'BRL',
                     'transaction_id': paymentData.id
                 });
-                console.log('[Utmify] DataLayer Purchase pushed');
+                console.log('[Utmify] DataLayer InitiateCheckout pushed');
+                
+                // 3. Tenta chamar função global do Utmify (se existir)
+                if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
+                    window.utmify.track('InitiateCheckout', {
+                        value: 48.70,
+                        currency: 'BRL',
+                        orderId: paymentData.id
+                    });
+                    console.log('[Utmify] Utmify.track InitiateCheckout chamado');
+                } else {
+                    console.warn('[Utmify] window.utmify não encontrado');
+                }
+                
+                console.log('[Utmify] ✅ Todos os eventos InitiateCheckout enviados');
                 
             } catch (error) {
-                console.error('[Utmify] Erro ao enviar eventos:', error);
+                console.error('[Utmify] ❌ Erro ao enviar eventos:', error);
             }
         }, 2000);
         
