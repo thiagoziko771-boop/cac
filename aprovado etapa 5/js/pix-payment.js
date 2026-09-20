@@ -751,58 +751,9 @@ async function gerarPix() {
                     'transaction_id': paymentData.id
                 });
                 console.log('[Utmify] DataLayer Purchase pushed');
-                    });
-                    console.log('[Utmify] Facebook Pixel InitiateCheckout enviado');
-                }
-                
-                // 2. DataLayer - Venda Pendente (Purchase com status pending)
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'purchase_pending',
-                    'ecommerce': {
-                        'purchase': {
-                            'actionField': {
-                                'id': paymentData.id,
-                                'affiliation': 'CAC Online',
-                                'revenue': '48.70',
-                                'tax': '0',
-                                'shipping': '0',
-                                'status': 'pending'
-                            },
-                            'products': [{
-                                'name': 'Taxa de Registro CAC',
-                                'id': paymentData.id,
-                                'price': '48.70',
-                                'brand': 'Exército Brasileiro',
-                                'category': 'Registro/CAC',
-                                'quantity': 1
-                            }]
-                        }
-                    },
-                    'value': 48.70,
-                    'currency': 'BRL',
-                    'transaction_id': paymentData.id,
-                    'payment_status': 'pending'
-                });
-                console.log('[Utmify] DataLayer Purchase Pending pushed');
-                
-                // 3. Utmify Track - Venda Pendente
-                if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
-                    window.utmify.track('purchase_pending', {
-                        value: 48.70,
-                        currency: 'BRL',
-                        orderId: paymentData.id,
-                        status: 'pending'
-                    });
-                    console.log('[Utmify] Utmify.track Purchase Pending chamado');
-                } else {
-                    console.warn('[Utmify] window.utmify não encontrado');
-                }
-                
-                console.log('[Utmify] ✅ Todos os eventos InitiateCheckout enviados');
                 
             } catch (error) {
-                console.error('[Utmify] ❌ Erro ao enviar eventos:', error);
+                console.error('[Utmify] Erro ao enviar eventos:', error);
             }
         }, 2000);
         
