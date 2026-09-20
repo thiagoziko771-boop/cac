@@ -485,13 +485,33 @@ function onPaymentSuccess(paymentData) {
     
     // Evento Facebook Pixel: Purchase
     if (typeof fbq !== 'undefined') {
+        const transactionId = paymentData.id || `cac_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const userData = AVEN_API.getUserData();
+        
         fbq('track', 'Purchase', {
             value: 48.70,
             currency: 'BRL',
-            content_name: 'Registro CAC',
+            content_name: 'Taxa de Registro CAC',
+            content_category: 'Registro',
             content_type: 'product',
-            num_items: 1
+            content_ids: ['cac_registro_taxa'],
+            num_items: 1,
+            // Parâmetros obrigatórios para otimização
+            transaction_id: transactionId,
+            // Dados de conversão avançada
+            predicted_ltv: 48.70,
+            // Informações do cliente (dados de conversão avançada)
+            external_id: userData.cpf.replace(/\D/g, ''),
+            email: userData.email,
+            phone: userData.telefone.replace(/\D/g, ''),
+            fn: userData.nome.split(' ')[0], // primeiro nome
+            ln: userData.nome.split(' ').slice(-1)[0], // sobrenome
+            ct: userData.endereco.cidade,
+            st: userData.endereco.estado,
+            zp: userData.endereco.cep.replace(/\D/g, '')
         });
+        
+        console.log(`[Facebook Pixel] Purchase enviado - Transaction ID: ${transactionId}`);
     }
     
     const pixContainer = document.getElementById('pix-container');
