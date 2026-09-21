@@ -90,7 +90,7 @@
 - **Função:** Recebe webhooks e envia notificações
 
 ### Facebook Pixel
-- **ID:** `1532671745295740`
+- **ID:** `3148553758675638`
 - **Eventos Rastreados:**
   - PageView (inicial)
   - Lead (ao iniciar)
