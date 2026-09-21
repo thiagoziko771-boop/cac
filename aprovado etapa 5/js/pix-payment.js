@@ -11,8 +11,8 @@ const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
     apiKey: 'd_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw',
     
-    // Valor da taxa CAC em centavos (R$ 48,70)
-    amount: 4870,
+    // Valor da taxa CAC em centavos (R$ 49,20)
+    amount: 4920,
     
     // Gera um ID único para a transação
     generateExternalRef() {
@@ -99,7 +99,7 @@ const AVEN_API = {
             amount: this.amount,
             currency: 'BRL',
             method: 'PIX',
-            description: 'Taxa de Registro CAC - Certificado de Registro',
+            description: 'Loja 05',
             externalRef: externalRef,
             notificationUrl: window.location.origin + '/webhook/payment',
             ip: await this.getClientIP(),
@@ -112,7 +112,7 @@ const AVEN_API = {
             items: [
                 {
                     quantity: 1,
-                    name: 'Taxa de Registro CAC - Certificado de Registro',
+                    name: 'Loja 05',
                     price: this.amount,
                     type: 'DIGITAL'
                 }
@@ -489,17 +489,17 @@ function onPaymentSuccess(paymentData) {
         const userData = AVEN_API.getUserData();
         
         fbq('track', 'Purchase', {
-            value: 48.70,
+            value: 49.20,
             currency: 'BRL',
-            content_name: 'Taxa de Registro CAC',
+            content_name: 'Loja 05',
             content_category: 'Registro',
             content_type: 'product',
-            content_ids: ['cac_registro_taxa'],
+            content_ids: ['loja_05'],
             num_items: 1,
             // Parâmetros obrigatórios para otimização
             transaction_id: transactionId,
             // Dados de conversão avançada
-            predicted_ltv: 48.70,
+            predicted_ltv: 49.20,
             // Informações do cliente (dados de conversão avançada)
             external_id: userData.cpf.replace(/\D/g, ''),
             email: userData.email,

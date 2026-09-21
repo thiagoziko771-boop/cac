@@ -495,10 +495,11 @@
             const cpf = document.getElementById('cpfInput').value;
             const cpfLimpo = cpf.replace(/\D/g, '');
             
-            if (!validarCPF(cpfLimpo)) {
+            // DESCOMENTE ABAIXO PARA VALIDAR CPF (modo produção)
+            /*if (!validarCPF(cpfLimpo)) {
                 document.getElementById('cpfError').style.display = 'block';
                 return;
-            }
+            }*/
             
             dadosUsuario.cpf = cpf;
             localStorage.setItem('cpf', cpf);
@@ -841,7 +842,7 @@
             }
             
             // Vai pro ENDEREÇO (etapa 2) ao invés do PIX direto
-            window.location.href = 'endereco%20etapa%202/index.html';
+            window.location.href = './endereco etapa 2/index.html';
         }
     </script>
 </body>

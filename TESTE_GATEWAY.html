@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Gateway - Loja 05</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1351b4;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1351b4;
+            background: #f8f9fa;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #1351b4;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0c3a8c;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #ccc;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #aaa;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            display: block;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            display: block;
+        }
+        .result.loading {
+            background: #e7f3ff;
+            border: 2px solid #1351b4;
+            color: #004085;
+            display: block;
+            text-align: center;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            max-width: 300px;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #1351b4;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .info-box strong {
+            color: #1351b4;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Teste de Gateway - Loja 05</h1>
+        
+        <div class="info-box">
+            <strong>⚠️ INFORMAÇÃO IMPORTANTE:</strong><br>
+            Este formulário testa a integração com a API Even Pay / AvenPayments.<br>
+            O nome do produto será enviado como "<strong>Loja 05</strong>" conforme configurado.
+        </div>
+
+        <form id="testeForm">
+            <div class="form-group">
+                <label for="nome">Nome do Cliente:</label>
+                <input type="text" id="nome" value="Teste Cliente CAC" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" placeholder="123.456.789-09" value="123.456.789-09" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="teste@loja05.com.br" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone:</label>
+                <input type="tel" id="telefone" placeholder="(11) 99999-9999" value="(11) 98765-4321" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" value="São Paulo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <input type="text" id="estado" value="SP" required>
+            </div>
+
+            <div class="form-group">
+                <label for="valor">Valor (R$):</label>
+                <input type="number" id="valor" step="0.01" value="48.70" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição do Produto:</label>
+                <input type="text" id="descricao" value="Loja 05" disabled style="background: #f0f0f0;">
+                <small style="color: #666; margin-top: 5px; display: block;">✓ Pré-configurado com "Loja 05"</small>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Gerar PIX na Gateway</button>
+                <button type="button" class="btn-secondary" onclick="limparFormulario()">Limpar</button>
+            </div>
+        </form>
+
+        <div id="resultado" class="result"></div>
+
+        <div id="respostaAPI" style="margin-top: 30px;"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'd_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw';
+        const API_URL = 'https://api.avenpayments.com/v1/payment';
+
+        document.getElementById('testeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await gerarPixNaGateway();
+        });
+
+        async function gerarPixNaGateway() {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = '<div class="loading">⏳ Gerando PIX na gateway...</div>';
+            resultado.className = 'result loading';
+
+            try {
+                // Coleta dados do formulário
+                const nome = document.getElementById('nome').value;
+                const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+                const email = document.getElementById('email').value;
+                const telefone = document.getElementById('telefone').value.replace(/\D/g, '');
+                const cidade = document.getElementById('cidade').value;
+                const estado = document.getElementById('estado').value;
+                const valor = parseFloat(document.getElementById('valor').value);
+                const descricao = document.getElementById('descricao').value;
+
+                // Converte valor para centavos
+                const amount = Math.round(valor * 100);
+
+                // Gera referência única
+                const externalRef = `loja05_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+                // Monta payload para a API
+                const payload = {
+                    amount: amount,
+                    currency: 'BRL',
+                    method: 'PIX',
+                    description: descricao,
+                    externalRef: externalRef,
+                    notificationUrl: window.location.origin + '/webhook/payment',
+                    payer: {
+                        name: nome,
+                        taxId: cpf,
+                        email: email,
+                        phone: `+55${telefone}`
+                    },
+                    items: [
+                        {
+                            quantity: 1,
+                            name: descricao,
+                            price: amount,
+                            type: 'DIGITAL'
+                        }
+                    ],
+                    delivery: {
+                        fee: 0,
+                        address: {
+                            country: 'BR',
+                            state: estado,
+                            city: cidade,
+                            district: 'Centro',
+                            street: 'Rua Teste',
+                            number: '0',
+                            zipCode: '00000000'
+                        }
+                    },
+                    metadata: {
+                        provider: 'loja-05',
+                        orderId: externalRef,
+                        sellerTaxId: cpf,
+                        sellerEmail: email
+                    }
+                };
+
+                console.log('=== ENVIANDO PARA GATEWAY ===');
+                console.log('URL:', API_URL);
+                console.log('Payload:', JSON.stringify(payload, null, 2));
+
+                // Faz requisição para a API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                console.log('Status:', response.status);
+
+                const dados = await response.json();
+                console.log('Resposta:', dados);
+
+                if (response.ok && dados.data) {
+                    // PIX gerado com sucesso
+                    const pixData = dados.data;
+                    
+                    resultado.className = 'result success';
+                    resultado.innerHTML = `
+                        <h3>✅ PIX Gerado com Sucesso!</h3>
+                        <p><strong>Produto:</strong> ${descricao}</p>
+                        <p><strong>Valor:</strong> R$ ${(amount / 100).toFixed(2)}</p>
+                        <p><strong>Status:</strong> ${pixData.status || 'PENDING'}</p>
+                        <p><strong>ID do Pagamento:</strong> <code>${pixData.id}</code></p>
+                        <p><strong>Referência Externa:</strong> <code>${externalRef}</code></p>
+                        ${pixData.pix?.qrcode ? `
+                            <div class="qr-code">
+                                <h4>Código QR:</h4>
+                                <img src="data:image/png;base64,${pixData.pix.qrcode}" alt="QR Code PIX">
+                            </div>
+                            <p><strong>Copia e Cola:</strong></p>
+                            <code style="display: block; word-break: break-all; padding: 10px; background: #f0f0f0; border-radius: 4px;">${pixData.pix.brcode}</code>
+                        ` : ''}
+                        <p style="margin-top: 15px; font-size: 12px; color: #666;">
+                            ⏰ Gerado em: ${new Date().toLocaleString('pt-BR')}
+                        </p>
+                    `;
+
+                    // Exibe resposta completa da API
+                    document.getElementById('respostaAPI').innerHTML = `
+                        <h3>📋 Resposta Completa da API:</h3>
+                        <pre>${JSON.stringify(dados, null, 2)}</pre>
+                    `;
+                } else {
+                    // Erro na API
+                    resultado.className = 'result error';
+                    resultado.innerHTML = `
+                        <h3>❌ Erro ao Gerar PIX</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Mensagem:</strong> ${dados.message || 'Erro desconhecido'}</p>
+                        <p><strong>Resposta da API:</strong></p>
+                        <pre>${JSON.stringify(dados, null, 2)}</pre>
+                    `;
+                }
+            } catch (erro) {
+                console.error('Erro:', erro);
+                resultado.className = 'result error';
+                resultado.innerHTML = `
+                    <h3>❌ Erro na Requisição</h3>
+                    <p>${erro.message}</p>
+                    <p>Verifique o console (F12) para mais detalhes.</p>
+                `;
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('testeForm').reset();
+            document.getElementById('resultado').innerHTML = '';
+            document.getElementById('respostaAPI').innerHTML = '';
+            document.getElementById('resultado').className = 'result';
+        }
+    </script>
+</body>
+</html>

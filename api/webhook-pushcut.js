@@ -1,13 +1,49 @@
 /**
- * Webhook intermediário: AvenPay → Pushcut
+ * Webhook intermediário: Even Pay → Pushcut
  * Formata notificações de pagamento para enviar ao Pushcut
  */
+
+// Chave da API Even Pay
+const EVEN_PAY_API_KEY = '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4';
 
 // URLs do Pushcut
 const PUSHCUT_URLS = {
     pendente: 'https://api.pushcut.io/vDugtAoggC9xef2AU2kQs/notifications/Aven',
     pago: 'https://api.pushcut.io/vDugtAoggC9xef2AU2kQs/notifications/AvenPay'
 };
+
+// URL base da API Even Pay
+const EVEN_PAY_BASE_URL = 'https://api.evenpay.com.br';
+
+// Função para fazer requisições autenticadas à API Even Pay
+async function chamarEvenPayAPI(endpoint, metodo = 'GET', dados = null) {
+    try {
+        const opcoes = {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${EVEN_PAY_API_KEY}`
+            }
+        };
+        
+        if (dados && ['POST', 'PUT', 'PATCH'].includes(metodo)) {
+            opcoes.body = JSON.stringify(dados);
+        }
+        
+        const url = `${EVEN_PAY_BASE_URL}${endpoint}`;
+        const response = await fetch(url, opcoes);
+        
+        if (!response.ok) {
+            throw new Error(`Even Pay retornou status ${response.status}`);
+        }
+        
+        const resultado = await response.json();
+        return { sucesso: true, dados: resultado };
+    } catch (error) {
+        console.error(`Erro ao chamar Even Pay API (${endpoint}):`, error);
+        return { sucesso: false, erro: error.message };
+    }
+}
 
 // Função para formatar valor em reais
 function formatarValor(centavos) {
@@ -23,6 +59,25 @@ function formatarCPF(cpf) {
     const limpo = cpf.replace(/\D/g, '');
     if (limpo.length !== 11) return cpf;
     return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
+}
+
+// Função para registrar/atualizar webhook na Even Pay
+async function registrarWebhookEvenPay(urlWebhook) {
+    const dadosWebhook = {
+        url: urlWebhook,
+        eventos: ['payment.pending', 'payment.approved', 'payment.refused'],
+        ativo: true
+    };
+    
+    const resultado = await chamarEvenPayAPI('/webhooks', 'POST', dadosWebhook);
+    
+    if (resultado.sucesso) {
+        console.log('Webhook registrado na Even Pay com sucesso:', resultado.dados);
+    } else {
+        console.error('Erro ao registrar webhook na Even Pay:', resultado.erro);
+    }
+    
+    return resultado;
 }
 
 // Função para enviar notificação ao Pushcut
@@ -59,7 +114,13 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Método não permitido. Use POST.' });
     }
     
-    console.log('=== Webhook recebido da AvenPay ===');
+    // Valida a chave Even Pay no header (segurança)
+    const chaveRecebida = req.headers['x-even-pay-key'];
+    if (chaveRecebida && chaveRecebida !== EVEN_PAY_API_KEY) {
+        return res.status(401).json({ error: 'Chave Even Pay inválida' });
+    }
+    
+    console.log('=== Webhook recebido da Even Pay ===');
     console.log('Body:', JSON.stringify(req.body, null, 2));
     
     try {
@@ -129,7 +190,8 @@ export default async function handler(req, res) {
                 success: true,
                 message: 'Notificação enviada ao Pushcut com sucesso',
                 status: status,
-                valor: valorFormatado
+                valor: valorFormatado,
+                evenPayKey: '✓ Configurada'
             });
         } else {
             return res.status(500).json({
