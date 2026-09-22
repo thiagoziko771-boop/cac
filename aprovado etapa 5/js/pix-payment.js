@@ -1,6 +1,6 @@
 /**
  * Integração com API AvenPayments - PIX
- * API Key: d_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw
+ * API Key: 2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4
  */
 
 console.log('=== PIX PAYMENT SCRIPT CARREGADO ===');
@@ -9,7 +9,7 @@ console.log('URL atual:', window.location.href);
 
 const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
-    apiKey: 'd_5SKkAF0pnKaSJ0OLKrsPdbr9LRcw8Qyox6Kz1keXw',
+    apiKey: '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4',
     
     // Valor da taxa CAC em centavos (R$ 49,20)
     amount: 4920,
