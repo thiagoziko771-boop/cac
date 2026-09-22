@@ -151,13 +151,16 @@ const AVEN_API = {
             console.log('URL:', `${this.baseURL}/payment`);
             console.log('Payload:', JSON.stringify(payload, null, 2));
             
+            // Tenta com fetch direto primeiro
             const response = await fetch(`${this.baseURL}/payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.apiKey}`
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                mode: 'cors',
+                credentials: 'omit'
             });
             
             console.log('=== Resposta da API ===');
