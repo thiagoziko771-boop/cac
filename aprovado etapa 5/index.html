@@ -2666,8 +2666,14 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
             buttonContainer.style.display = 'none';
             
             try {
+                console.log('🔵 Iniciando geração de PIX...');
+                console.log('Chave API:', AVEN_API.apiKey);
+                console.log('URL Base:', AVEN_API.baseURL);
+                
                 // Cria o pagamento PIX
                 const paymentData = await AVEN_API.createPixPayment();
+                
+                console.log('✅ Pagamento criado com sucesso:', paymentData);
                 
                 // Esconde loading
                 pixLoading.classList.add('hidden');
@@ -2679,7 +2685,10 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
                 // Esconde loading
                 pixLoading.classList.add('hidden');
                 
-                // Mostra erro
+                console.error('❌ ERRO COMPLETO:', error);
+                console.error('Stack:', error.stack);
+                
+                // Mostra erro detalhado
                 pixContainer.innerHTML = `
                     <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto text-center">
                         <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
@@ -2687,6 +2696,10 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
                         </div>
                         <h3 class="text-xl font-bold text-red-800 mb-3">Erro ao Gerar PIX</h3>
                         <p class="text-gray-700 mb-4">${error.message}</p>
+                        <details class="text-left bg-red-100 p-3 rounded text-xs text-red-800 mb-4">
+                            <summary class="cursor-pointer font-bold">Erro Técnico (para DEBUG)</summary>
+                            <pre class="mt-2 overflow-auto">${JSON.stringify({message: error.message, stack: error.stack}, null, 2)}</pre>
+                        </details>
                         <button 
                             onclick="window.location.reload()" 
                             class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-semibold"
