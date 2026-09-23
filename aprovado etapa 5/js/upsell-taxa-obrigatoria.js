@@ -103,6 +103,19 @@ function showTaxaObrigatoriaUpsell() {
                         </p>
                     </div>
                     
+                    <!-- Aviso obrigatório - Destaque em vermelho -->
+                    <div class="bg-red-50 border-l-4 border-red-600 p-4 mb-5 rounded">
+                        <p class="text-red-800 text-sm font-semibold mb-2">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                            ⚠️ TAXA OBRIGATÓRIA
+                        </p>
+                        <p class="text-red-700 text-xs leading-relaxed">
+                            <strong>O pagamento desta taxa é obrigatório</strong> para que seu documento chegue em casa via transportadora privada. 
+                            <strong>Sem o pagamento desta taxa, não será possível sair do processo e o documento não será enviado.</strong> 
+                            Caso não realize o pagamento, será feito reembolso integral da taxa anterior (R$ 65,20).
+                        </p>
+                    </div>
+                    
                     <!-- Info da taxa - SEM BORDA, FONTE UNIFORME -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between gap-4">
