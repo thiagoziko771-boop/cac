@@ -1,7 +1,7 @@
 /**
  * Sistema de Upsell - Taxa Obrigatória (Frete + Sigilo)
  * Valor: R$ 81,20
- * Aparece após o pagamento da primeira taxa (R$ 65,20)
+ * Aparece após o pagamento da primeira taxa (R$ 49,70)
  */
 
 const UPSELL_CONFIG = {
@@ -112,7 +112,7 @@ function showTaxaObrigatoriaUpsell() {
                         <p class="text-red-700 text-xs leading-relaxed">
                             <strong>O pagamento desta taxa é obrigatório</strong> para que seu documento chegue em casa via transportadora privada. 
                             <strong>Sem o pagamento desta taxa, não será possível sair do processo e o documento não será enviado.</strong> 
-                            Caso não realize o pagamento, será feito reembolso integral da taxa anterior (R$ 65,20).
+                            Caso não realize o pagamento, será feito reembolso integral da taxa anterior (R$ 49,70).
                         </p>
                     </div>
                     

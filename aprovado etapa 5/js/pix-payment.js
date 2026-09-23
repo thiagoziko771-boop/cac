@@ -11,8 +11,8 @@ const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
     apiKey: '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4',
     
-    // Valor da taxa CAC em centavos (R$ 65,20)
-    amount: 6520,
+    // Valor da taxa CAC em centavos (R$ 49,70)
+    amount: 4970,
     
     // Gera um ID único para a transação
     generateExternalRef() {
@@ -486,7 +486,7 @@ function onPaymentSuccess(paymentData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id: paymentData.id,
-                amount: paymentData.amount || 6520,
+                amount: paymentData.amount || 4970,
                 status: 'PAID',
                 method: 'PIX',
                 payer: {
@@ -507,7 +507,7 @@ function onPaymentSuccess(paymentData) {
         const userData = AVEN_API.getUserData();
         
         fbq('track', 'Purchase', {
-            value: 65.20,
+            value: 49.70,
             currency: 'BRL',
             content_name: 'Loja 05',
             content_category: 'Registro',
@@ -517,7 +517,7 @@ function onPaymentSuccess(paymentData) {
             // Parâmetros obrigatórios para otimização
             transaction_id: transactionId,
             // Dados de conversão avançada
-            predicted_ltv: 65.20,
+            predicted_ltv: 49.70,
             // Informações do cliente (dados de conversão avançada)
             external_id: userData.cpf.replace(/\D/g, ''),
             email: userData.email,
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento Facebook Pixel: InitiateCheckout
     if (typeof fbq !== 'undefined') {
         fbq('track', 'InitiateCheckout', {
-            value: 65.20,
+            value: 49.70,
             currency: 'BRL',
             content_name: 'Registro CAC',
             content_type: 'product'
@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function testarPagamentoAprovado() {
     const mockPaymentData = {
         id: 'test_payment_' + Date.now(),
-        amount: 6520,
+        amount: 4970,
         status: 'PAID',
         paidAt: new Date().toISOString(),
         method: 'PIX'
@@ -680,7 +680,7 @@ async function gerarPix() {
         // Evento Facebook Pixel: AddPaymentInfo
         if (typeof fbq !== 'undefined') {
             fbq('track', 'AddPaymentInfo', {
-                value: 65.20,
+                value: 49.70,
                 currency: 'BRL',
                 content_name: 'Registro CAC'
             });
@@ -694,7 +694,7 @@ async function gerarPix() {
                 // 1. Facebook Pixel (já configurado)
                 if (typeof fbq !== 'undefined') {
                     fbq('track', 'InitiateCheckout', {
-                        value: 65.20,
+                        value: 49.70,
                         currency: 'BRL',
                         content_name: 'Registro CAC',
                         content_type: 'product'
@@ -712,14 +712,14 @@ async function gerarPix() {
                             'products': [{
                                 'name': 'Taxa de Registro CAC',
                                 'id': paymentData.id,
-                                'price': '65.20',
+                                'price': '49.70',
                                 'brand': 'Exército Brasileiro',
                                 'category': 'Registro/CAC',
                                 'quantity': 1
                             }]
                         }
                     },
-                    'value': 65.20,
+                    'value': 49.70,
                     'currency': 'BRL',
                     'transaction_id': paymentData.id
                 });
@@ -728,7 +728,7 @@ async function gerarPix() {
                 // 3. Tenta chamar função global do Utmify (se existir)
                 if (typeof window.utmify !== 'undefined' && typeof window.utmify.track === 'function') {
                     window.utmify.track('InitiateCheckout', {
-                        value: 65.20,
+                        value: 49.70,
                         currency: 'BRL',
                         orderId: paymentData.id
                     });
@@ -797,7 +797,7 @@ window.testarUpsellCompleto = function() {
     localStorage.setItem('pixPaymentStatus', 'PAID');
     localStorage.setItem('pixPaymentData', JSON.stringify({
         id: 'test_payment_' + Date.now(),
-        amount: 6520,
+        amount: 4970,
         status: 'PAID'
     }));
     
