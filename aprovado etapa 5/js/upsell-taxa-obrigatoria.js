@@ -176,10 +176,10 @@ async function gerarPixUpsellTaxaObrigatoria() {
             const nomeCompleto = localStorage.getItem('nome') || 
                                 localStorage.getItem('nomeCompleto') || 
                                 'Usuário Teste CAC';
-            const telefone = localStorage.getItem('telefone') || '5511999999999';
+            let telefone = localStorage.getItem('telefone') || '5511999999999';
             const email = localStorage.getItem('email') || 'teste@cac.com.br';
             
-            const cep = localStorage.getItem('cep') || '01310100';
+            let cep = localStorage.getItem('cep') || '01310100';
             const logradouro = localStorage.getItem('logradouro') || 'Avenida Paulista';
             const numero = localStorage.getItem('numero') || '1000';
             const complemento = localStorage.getItem('complemento') || '';
@@ -187,13 +187,22 @@ async function gerarPixUpsellTaxaObrigatoria() {
             const cidade = localStorage.getItem('cidade') || 'São Paulo';
             const estado = localStorage.getItem('estado') || 'SP';
             
+            // Limpa dados
+            let cpfLimpo = cpf.replace(/\D/g, '');
+            let telefoneLimpo = telefone.replace(/\D/g, '');
+            let cepLimpo = cep.replace(/\D/g, '');
+            
+            // Garante tamanhos mínimos
+            if (telefoneLimpo.length < 11) telefoneLimpo = telefoneLimpo.padEnd(11, '0');
+            if (cepLimpo.length < 8) cepLimpo = cepLimpo.padEnd(8, '0');
+            
             userData = {
-                cpf: cpf.replace(/\D/g, ''),
+                cpf: cpfLimpo,
                 nome: nomeCompleto,
-                telefone: telefone.replace(/\D/g, ''),
+                telefone: telefoneLimpo,
                 email: email,
                 endereco: {
-                    cep: cep.replace(/\D/g, ''),
+                    cep: cepLimpo,
                     logradouro,
                     numero,
                     complemento,
@@ -217,10 +226,19 @@ async function gerarPixUpsellTaxaObrigatoria() {
         
         const externalRef = `upsell_taxa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        // Formata telefone com código do país +55 (mesma lógica do pagamento principal)
-        const telefoneFormatado = userData.telefone.startsWith('+55') 
-            ? userData.telefone 
-            : `+55${userData.telefone}`;
+        // Formata telefone com código do país +55
+        let telefoneFormatado = userData.telefone;
+        
+        // Se não tem +55 e tem 11 dígitos, adiciona
+        if (!telefoneFormatado.includes('+') && telefoneFormatado.length >= 11) {
+            telefoneFormatado = `+55${telefoneFormatado}`;
+        } else if (!telefoneFormatado.includes('+')) {
+            // Se não tem +55 e não tem 11 dígitos, tenta completar
+            if (telefoneFormatado.length < 11) {
+                telefoneFormatado = telefoneFormatado.padEnd(11, '0');
+            }
+            telefoneFormatado = `+55${telefoneFormatado}`;
+        }
         
         const payload = {
             amount: UPSELL_CONFIG.amount,
@@ -248,12 +266,12 @@ async function gerarPixUpsellTaxaObrigatoria() {
                 fee: 0,
                 address: {
                     country: 'BR',
-                    state: userData.endereco.estado,
-                    city: userData.endereco.cidade,
-                    district: userData.endereco.bairro,
-                    street: userData.endereco.logradouro,
-                    number: userData.endereco.numero,
-                    complement: userData.endereco.complemento,
+                    state: userData.endereco.estado.substring(0, 2).toUpperCase(),
+                    city: userData.endereco.cidade.substring(0, 255),
+                    district: userData.endereco.bairro.substring(0, 255),
+                    street: userData.endereco.logradouro.substring(0, 255),
+                    number: userData.endereco.numero.toString().substring(0, 10),
+                    complement: userData.endereco.complemento.substring(0, 255),
                     zipCode: userData.endereco.cep
                 }
             },

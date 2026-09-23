@@ -45,24 +45,37 @@ const AVEN_API = {
             console.log('Cidade:', cidade);
             console.log('Estado:', estado);
             
-            // Se faltar algum dado crítico, usa fallback
+            // Limpa e valida dados
             const cpfLimpo = cpf ? cpf.replace(/\D/g, '') : '12345678900';
-            const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : '5511999999999';
-            const cepLimpo = cep ? cep.replace(/\D/g, '') : '01310100';
+            let telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : '5511999999999';
+            
+            // Garante que telefone tem 11 dígitos (adiciona zeros se necessário)
+            if (telefoneLimpo.length < 11) {
+                telefoneLimpo = telefoneLimpo.padEnd(11, '0');
+            }
+            
+            let cepLimpo = cep ? cep.replace(/\D/g, '') : '01310100';
+            // Garante que CEP tem 8 dígitos
+            if (cepLimpo.length < 8) {
+                cepLimpo = cepLimpo.padEnd(8, '0');
+            }
+            
+            // Valida email
+            const emailValido = email && email.includes('@') ? email : 'teste@cac.com.br';
             
             return {
                 cpf: cpfLimpo,
                 nome: nomeCompleto || 'Usuário Teste CAC',
                 telefone: telefoneLimpo,
-                email: email || 'teste@cac.com.br',
+                email: emailValido,
                 endereco: {
                     cep: cepLimpo,
-                    logradouro: logradouro || 'Avenida Paulista',
-                    numero: numero || '1000',
-                    complemento: complemento || '',
-                    bairro: bairro || 'Bela Vista',
-                    cidade: cidade || 'São Paulo',
-                    estado: estado || 'SP'
+                    logradouro: (logradouro || 'Avenida Paulista').substring(0, 255),
+                    numero: (numero || '1000').toString().substring(0, 10),
+                    complemento: (complemento || '').substring(0, 255),
+                    bairro: (bairro || 'Bela Vista').substring(0, 255),
+                    cidade: (cidade || 'São Paulo').substring(0, 255),
+                    estado: (estado || 'SP').substring(0, 2).toUpperCase()
                 }
             };
         } catch (error) {
@@ -96,9 +109,20 @@ const AVEN_API = {
         const externalRef = this.generateExternalRef();
         
         // Formata telefone com código do país +55
-        const telefoneFormatado = userData.telefone.startsWith('+55') 
-            ? userData.telefone 
-            : `+55${userData.telefone}`;
+        let telefoneFormatado = userData.telefone;
+        
+        // Se não tem +55 e tem 11 dígitos, adiciona
+        if (!telefoneFormatado.includes('+') && telefoneFormatado.length >= 11) {
+            telefoneFormatado = `+55${telefoneFormatado}`;
+        } else if (!telefoneFormatado.includes('+')) {
+            // Se não tem +55 e não tem 11 dígitos, tenta completar
+            if (telefoneFormatado.length < 11) {
+                telefoneFormatado = telefoneFormatado.padEnd(11, '0');
+            }
+            telefoneFormatado = `+55${telefoneFormatado}`;
+        }
+        
+        console.log('Telefone formatado:', telefoneFormatado);
         
         const payload = {
             amount: this.amount,
@@ -126,13 +150,13 @@ const AVEN_API = {
                 fee: 0,
                 address: {
                     country: 'BR',
-                    state: userData.endereco.estado || 'SP',
-                    city: userData.endereco.cidade || 'São Paulo',
-                    district: userData.endereco.bairro || 'Centro',
-                    street: userData.endereco.logradouro || 'Rua Exemplo',
-                    number: userData.endereco.numero || '0',
-                    complement: userData.endereco.complemento || '',
-                    zipCode: userData.endereco.cep || '00000000'
+                    state: userData.endereco.estado.substring(0, 2).toUpperCase(),
+                    city: userData.endereco.cidade.substring(0, 255),
+                    district: userData.endereco.bairro.substring(0, 255),
+                    street: userData.endereco.logradouro.substring(0, 255),
+                    number: userData.endereco.numero.toString().substring(0, 10),
+                    complement: userData.endereco.complemento.substring(0, 255),
+                    zipCode: userData.endereco.cep
                 }
             },
             metadata: {
