@@ -6,7 +6,7 @@
 
 const UPSELL_CONFIG = {
     amount: 8120, // R$ 81,20 em centavos
-    description: 'Taxa Fixa de Tratamento Sigiloso',
+    description: 'Serviço de Tratamento Sigiloso',
     apiKey: '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4',
     baseURL: 'https://api.avenpayments.com/v1'
 };
@@ -79,7 +79,7 @@ function showTaxaObrigatoriaUpsell() {
                         </div>
                         <div>
                             <h2 class="text-2xl font-bold text-gray-800">
-                                Taxa Fixa de Tratamento Sigiloso
+                                Serviço de Tratamento Sigiloso
                             </h2>
                             <p class="text-orange-600 font-semibold text-lg mt-1">
                                 Frete e manuseio com sigilo absoluto
@@ -89,8 +89,8 @@ function showTaxaObrigatoriaUpsell() {
                     
                     <!-- Texto descritivo principal -->
                     <p class="text-gray-600 text-sm leading-relaxed mb-5">
-                        Seu processo do CAC envolve dados sensíveis — CPF, endereço, dados da arma e antecedentes. Esta taxa fixa e 
-                        <strong>obrigatória</strong> assegura que todo o manuseio dos seus documentos aconteça 
+                        Seu processo do CAC envolve dados sensíveis — CPF, endereço, dados da arma e antecedentes. Este serviço de 
+                        <strong>obrigatório</strong> assegura que todo o manuseio dos seus documentos aconteça 
                         <strong>no sigilo total</strong>, sem compartilhamento com terceiros, acesso restrito ao seu processo e rastreio confidencial de ponta a ponta.
                     </p>
                     
@@ -106,7 +106,7 @@ function showTaxaObrigatoriaUpsell() {
                     <!-- Info da taxa - SEM BORDA, FONTE UNIFORME -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between gap-4">
-                            <span class="text-gray-800 font-bold text-base">Taxa fixa (frete + sigilo)</span>
+                            <span class="text-gray-800 font-bold text-base">Serviço de Tratamento Sigiloso</span>
                             <span class="text-gray-800 font-bold text-base">R$ 81,20</span>
                         </div>
                         <div class="flex items-center gap-2 text-green-600 font-semibold text-sm mt-3">
@@ -215,7 +215,7 @@ async function gerarPixUpsellTaxaObrigatoria() {
             items: [
                 {
                     quantity: 1,
-                    name: 'Taxa Fixa de Tratamento Sigiloso',
+                    name: 'Serviço de Tratamento Sigiloso',
                     price: UPSELL_CONFIG.amount,
                     type: 'SERVICE'
                 }
@@ -281,7 +281,7 @@ async function gerarPixUpsellTaxaObrigatoria() {
         // Facebook Pixel
         if (typeof fbq !== 'undefined') {
             fbq('track', 'ViewContent', {
-                content_name: 'Taxa Fixa de Tratamento Sigiloso',
+                content_name: 'Serviço de Tratamento Sigiloso',
                 content_type: 'product',
                 value: 81.20,
                 currency: 'BRL'
@@ -436,7 +436,7 @@ function onUpsellPaymentSuccess(paymentData) {
         fbq('track', 'Purchase', {
             value: 81.20,
             currency: 'BRL',
-            content_name: 'Taxa Fixa de Tratamento Sigiloso',
+            content_name: 'Serviço de Tratamento Sigiloso',
             content_type: 'product',
             num_items: 1
         });
