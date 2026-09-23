@@ -418,9 +418,10 @@ function copyPixCode() {
 // Verificação automática do pagamento
 let verificationInterval = null;
 
-function startPaymentVerification(paymentId) {
+function startPaymentVerification(paymentId, type = 'main') {
     console.log('=== Iniciando verificação automática de pagamento ===');
     console.log('Payment ID:', paymentId);
+    console.log('Type:', type);
     
     let checkCount = 0;
     const maxChecks = 360; // 360 checks * 5s = 30 minutos
@@ -438,13 +439,27 @@ function startPaymentVerification(paymentId) {
         
         try {
             console.log(`Verificando pagamento (tentativa ${checkCount})...`);
-            const status = await AVEN_API.checkPaymentStatus(paymentId);
+            
+            // Usa a função apropriada baseado no tipo
+            let status;
+            if (type === 'upsell') {
+                status = await checkUpsellPaymentStatus(paymentId);
+            } else {
+                status = await AVEN_API.checkPaymentStatus(paymentId);
+            }
+            
             console.log('Status do pagamento:', status);
             
             if (status.status === 'PAID') {
                 console.log('✅ Pagamento confirmado!');
                 clearInterval(verificationInterval);
-                onPaymentSuccess(status);
+                
+                // Chama callback apropriado
+                if (type === 'upsell') {
+                    onUpsellPaymentSuccess(status);
+                } else {
+                    onPaymentSuccess(status);
+                }
             } else if (status.status === 'REFUSED' || status.status === 'REFUNDED') {
                 console.log('❌ Pagamento recusado ou cancelado');
                 clearInterval(verificationInterval);
@@ -773,3 +788,22 @@ window.showPixPayment = showPixPayment;
 window.copyPixCode = copyPixCode;
 window.testarPagamentoAprovado = testarPagamentoAprovado;
 window.gerarPix = gerarPix;
+
+// 🧪 FUNÇÃO DE TESTE - Simula pagamento e mostra upsell
+window.testarUpsellCompleto = function() {
+    console.log('🧪 Iniciando teste completo do upsell...');
+    
+    // Marca como pagado
+    localStorage.setItem('pixPaymentStatus', 'PAID');
+    localStorage.setItem('pixPaymentData', JSON.stringify({
+        id: 'test_payment_' + Date.now(),
+        amount: 6520,
+        status: 'PAID'
+    }));
+    
+    // Remove marcação de upsell mostrado (para poder testar novamente)
+    localStorage.removeItem('upsellTaxaObrigatoriaMostrado');
+    
+    // Chama verificação do upsell
+    checkAndShowUpsell();
+};
