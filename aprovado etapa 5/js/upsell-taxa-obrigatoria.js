@@ -125,7 +125,7 @@ function showTaxaObrigatoriaUpsell() {
                     
                     <!-- Texto pequeno inferior -->
                     <p class="text-center text-xs text-gray-500">
-                        Serviço opcional · Valor único · Sem compartilhamento de dados
+                        Serviço obrigatório · Valor único · Sem compartilhamento de dados
                     </p>
                     
                 </div>
