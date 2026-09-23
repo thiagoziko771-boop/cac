@@ -18,7 +18,7 @@
 const AVEN_API = {
     baseURL: 'https://api.avenpayments.com/v1',
     apiKey: '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4',
-    amount: 4920, // R$ 49,20
+    amount: 6520, // R$ 65,20
 }
 ```
 - ✅ Chave correta
@@ -50,7 +50,7 @@ const AVEN_API = {
 
 ```javascript
 {
-    "amount": 4920,                    // ✅ R$ 49,20
+    "amount": 6520,                    // ✅ R$ 65,20
     "currency": "BRL",                 // ✅ Real brasileiro
     "method": "PIX",                   // ✅ Método PIX
     "description": "Loja 05",          // ✅ Nome correto
@@ -64,7 +64,7 @@ const AVEN_API = {
     "items": [{
         "quantity": 1,
         "name": "Loja 05",              // ✅ CORRETO
-        "price": 4920,                  // ✅ CORRETO
+        "price": 6520,                  // ✅ CORRETO
         "type": "DIGITAL"               // ✅ CORRETO
     }]
 }
@@ -205,7 +205,7 @@ Resultado: PIX GERADO COM SUCESSO
 - [x] Chave API correta (`2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4`)
 - [x] URL correta (`https://api.avenpayments.com/v1/payment`)
 - [x] Descrição correta (`Loja 05`)
-- [x] Valor correto (`4920` centavos = R$ 49,20)
+- [x] Valor correto (`6520` centavos = R$ 65,20)
 - [x] Método correto (`PIX`)
 - [x] Item name correto (`Loja 05`)
 - [x] Headers corretos (Authorization + Content-Type)

@@ -3,7 +3,7 @@
 """
 Script para gerar PIX na AvenPayments - Conforme Documentacao Oficial
 Produto: Loja 05
-Valor: R$ 48,70
+Valor: R$ 65,20
 """
 
 import requests
@@ -24,7 +24,7 @@ def gerar_ref():
 
 # Payload conforme documentacao
 payload = {
-    "amount": 4920,  # R$ 49,20 em centavos
+    "amount": 6520,  # R$ 65,20 em centavos
     "currency": "BRL",
     "method": "PIX",
     "description": "Loja 05",
@@ -40,7 +40,7 @@ payload = {
         {
             "quantity": 1,
             "name": "Loja 05",
-            "price": 4920,
+            "price": 6520,
             "type": "DIGITAL"
         }
     ]
