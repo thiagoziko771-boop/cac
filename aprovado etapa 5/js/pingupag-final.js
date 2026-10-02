@@ -1,27 +1,28 @@
 /**
- * PINGUPAG FORCE v2 - CHAMADA DIRETA SEM BACKEND
- * Ignora qualquer resposta do servidor e chama Pingupag direto do navegador
+ * PINGUPAG FORCE v3 - VIA PROXY SERVERLESS (SEM CORS)
+ * Chama /api/pix-create e /api/pix-status locais em vez da API externa direta
  */
 
-console.log('[PINGUPAG-FORCE-V2] 🚀 Ativando modo forçado direto...');
+console.log('[PINGUPAG-FORCE-V3] 🚀 Ativando modo proxy serverless...');
 
 // REMOVE TUDO ANTIGO
 delete window.AVEN_API;
 delete window.EvenPay;
 
 // ============================================================================
-// API PINGUPAG - CHAMADA DIRETA DO NAVEGADOR
+// API PINGUPAG - VIA PROXY SERVERLESS
 // ============================================================================
 
 window.PINGUPAG_API = {
-    baseURL: 'https://app.pingupag.com/gateway/v1',
-    apiKey: 'pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384',
-    amount: 8990,
-    
+    // URLs do proxy local (mesma origem = sem CORS)
+    createURL: '/api/pix-create',
+    statusURL: '/api/pix-status',
+    amount: 8990, // R$ 89,90
+
     generateReference() {
         return `cac_${Date.now()}_${Math.floor(Math.random() * 999999)}`;
     },
-    
+
     getUserData() {
         return {
             cpf: (localStorage.getItem('cpf') || '12345678900').replace(/\D/g, ''),
@@ -32,13 +33,13 @@ window.PINGUPAG_API = {
             estado: localStorage.getItem('estado') || 'SP'
         };
     },
-    
+
     async createPixPayment() {
-        console.log('[PINGUPAG-FORCE-V2] 📤 Chamada DIRETA para Pingupag...');
-        
+        console.log('[PINGUPAG-FORCE-V3] 📤 Chamando proxy /api/pix-create...');
+
         const userData = this.getUserData();
         const reference = this.generateReference();
-        
+
         const payload = {
             amount: this.amount,
             description: 'Loja 5',
@@ -58,72 +59,71 @@ window.PINGUPAG_API = {
                 zipcode: '01310100'
             }
         };
-        
-        console.log('[PINGUPAG-FORCE-V2] URL:', this.baseURL + '/transaction');
-        
+
+        console.log('[PINGUPAG-FORCE-V3] Payload:', JSON.stringify(payload));
+
         try {
-            // CHAMADA DIRETA - SEM PASSAR PELO BACKEND
-            const response = await fetch(`${this.baseURL}/transaction`, {
+            const response = await fetch(this.createURL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': this.apiKey
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(payload)
             });
-            
+
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('[PINGUPAG-FORCE-V2] ❌ HTTP Error:', response.status);
+                console.error('[PINGUPAG-FORCE-V3] ❌ HTTP Error:', response.status, errorText);
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-            
+
             const data = await response.json();
-            console.log('[PINGUPAG-FORCE-V2] 📥 Resposta recebida');
-            
-            // DEBUG COMPLETO
-            console.log('[PINGUPAG-FORCE-V2] Status:', data.status);
-            console.log('[PINGUPAG-FORCE-V2] QR Code:', data.qr_code ? 'SIM' : 'NÃO');
-            console.log('[PINGUPAG-FORCE-V2] Transaction ID:', data.transaction_id);
-            
-            // VALIDAÇÃO RIGOROSA
+            console.log('[PINGUPAG-FORCE-V3] 📥 Resposta recebida do proxy');
+            console.log('[PINGUPAG-FORCE-V3] Status:', data.status);
+            console.log('[PINGUPAG-FORCE-V3] QR Code:', data.qr_code ? 'SIM' : 'NÃO');
+            console.log('[PINGUPAG-FORCE-V3] Transaction ID:', data.transaction_id);
+
             if (data.status !== 'success') {
-                console.error('[PINGUPAG-FORCE-V2] ❌ Status:', data.status);
+                console.error('[PINGUPAG-FORCE-V3] ❌ Status inválido:', data.status);
                 throw new Error(`Status inválido: ${data.status}`);
             }
-            
+
             if (!data.qr_code) {
-                console.error('[PINGUPAG-FORCE-V2] ❌ QR code ausente!');
-                console.error('[PINGUPAG-FORCE-V2] Campos:', Object.keys(data));
-                throw new Error('QR code não encontrado');
+                console.error('[PINGUPAG-FORCE-V3] ❌ QR code ausente!');
+                throw new Error('QR code não encontrado na resposta');
             }
-            
-            console.log('[PINGUPAG-FORCE-V2] ✅ Resposta válida!');
-            
+
+            console.log('[PINGUPAG-FORCE-V3] ✅ PIX gerado com sucesso via proxy!');
+
             localStorage.setItem('pixPaymentId', data.transaction_id);
             localStorage.setItem('pixPaymentData', JSON.stringify(data));
-            
+
             return data;
         } catch (error) {
-            console.error('[PINGUPAG-FORCE-V2] ❌ ERRO FINAL:', error.message);
+            console.error('[PINGUPAG-FORCE-V3] ❌ ERRO FINAL:', error.message);
             throw error;
         }
     },
-    
+
     async checkPaymentStatus(transactionId) {
         try {
             const response = await fetch(
-                `${this.baseURL}/query?action=get_transaction&id=${transactionId}`,
+                `${this.statusURL}?id=${encodeURIComponent(transactionId)}`,
                 {
                     method: 'GET',
                     headers: {
-                        'X-API-Key': this.apiKey
+                        'Content-Type': 'application/json'
                     }
                 }
             );
-            
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
             return await response.json();
         } catch (e) {
+            console.warn('[PINGUPAG-FORCE-V3] Erro ao verificar status:', e.message);
             throw e;
         }
     }
@@ -134,27 +134,27 @@ window.PINGUPAG_API = {
 // ============================================================================
 
 window.showPixPayment = function(paymentData) {
-    console.log('[PINGUPAG-FORCE-V2] 🎨 Exibindo PIX');
-    
+    console.log('[PINGUPAG-FORCE-V3] 🎨 Exibindo PIX');
+
     const pixContainer = document.getElementById('pix-container');
     const pixLoading = document.getElementById('pix-loading');
-    
+
     if (!pixContainer) {
-        console.error('[PINGUPAG-FORCE-V2] ❌ Container não encontrado');
+        console.error('[PINGUPAG-FORCE-V3] ❌ Container pix-container não encontrado');
         return;
     }
-    
+
     if (pixLoading) pixLoading.style.display = 'none';
-    
+
     const pixCode = paymentData.qr_code;
     if (!pixCode) {
-        console.error('[PINGUPAG-FORCE-V2] ❌ QR code não encontrado');
+        console.error('[PINGUPAG-FORCE-V3] ❌ QR code não encontrado');
         pixContainer.innerHTML = '<div class="text-red-600 p-4 text-center font-bold">Erro: QR Code não gerado</div>';
         return;
     }
-    
+
     const valor = (paymentData.amount / 100).toFixed(2);
-    
+
     pixContainer.innerHTML = `
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl mx-auto">
             <div class="text-center mb-8">
@@ -164,9 +164,9 @@ window.showPixPayment = function(paymentData) {
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Pagamento via PIX</h2>
                 <p class="text-2xl font-bold text-green-600">R$ ${valor}</p>
             </div>
-            
+
             <div id="qrcode" class="flex justify-center mb-6 p-4 bg-gray-50 rounded-lg" style="min-height: 280px;"></div>
-            
+
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
                 <p class="text-blue-900"><strong>ℹ️ Como pagar:</strong></p>
                 <ol class="text-blue-800 text-sm mt-2 ml-4 list-decimal">
@@ -175,37 +175,37 @@ window.showPixPayment = function(paymentData) {
                     <li>Confirme a transação</li>
                 </ol>
             </div>
-            
+
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Código PIX (Copia e Cola):</label>
                 <div class="flex gap-2">
-                    <input 
-                        type="text" 
-                        id="pix-code" 
-                        value="${pixCode}" 
-                        readonly 
+                    <input
+                        type="text"
+                        id="pix-code"
+                        value="${pixCode}"
+                        readonly
                         class="flex-1 px-4 py-2 border border-gray-300 rounded font-mono text-xs"
                     >
-                    <button 
-                        onclick="window.copiarPix()" 
+                    <button
+                        onclick="window.copiarPix()"
                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold"
                     >
                         <i class="fas fa-copy"></i> Copiar
                     </button>
                 </div>
             </div>
-            
+
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
                 <p class="text-yellow-900 font-semibold">✅ PINGUPAG - Gateway PIX</p>
             </div>
-            
+
             <div class="text-center">
                 <p class="text-gray-600 text-sm">Aguardando confirmação...</p>
                 <div class="mt-2"><i class="fas fa-spinner fa-spin text-green-600"></i></div>
             </div>
         </div>
     `;
-    
+
     // QR CODE VISUAL
     try {
         if (typeof QRCode !== 'undefined') {
@@ -217,12 +217,14 @@ window.showPixPayment = function(paymentData) {
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
-            console.log('[PINGUPAG-FORCE-V2] ✅ QR Code visual gerado');
+            console.log('[PINGUPAG-FORCE-V3] ✅ QR Code visual gerado');
+        } else {
+            console.error('[PINGUPAG-FORCE-V3] ❌ QRCode.js não disponível');
         }
     } catch (e) {
-        console.error('[PINGUPAG-FORCE-V2] Erro QR:', e);
+        console.error('[PINGUPAG-FORCE-V3] Erro QR:', e);
     }
-    
+
     window.startPaymentVerification(paymentData.transaction_id);
 };
 
@@ -238,23 +240,28 @@ window.copiarPix = function() {
 let verificationInterval = null;
 
 window.startPaymentVerification = function(transactionId) {
+    console.log('[PINGUPAG-FORCE-V3] 🔄 Iniciando verificação de pagamento...');
     let attempts = 0;
-    
+
+    if (verificationInterval) clearInterval(verificationInterval);
+
     verificationInterval = setInterval(async () => {
         attempts++;
         if (attempts > 360) {
             clearInterval(verificationInterval);
+            console.log('[PINGUPAG-FORCE-V3] ⏰ Timeout de verificação');
             return;
         }
-        
+
         try {
             const status = await window.PINGUPAG_API.checkPaymentStatus(transactionId);
             if (status.status === 'approved' || status.payment_status === 'paid') {
                 clearInterval(verificationInterval);
+                console.log('[PINGUPAG-FORCE-V3] ✅ Pagamento confirmado!');
                 window.onPaymentSuccess(status);
             }
         } catch (e) {
-            // Silencia
+            // Silencia erros de polling
         }
     }, 5000);
 };
@@ -275,5 +282,4 @@ window.onPaymentSuccess = function(paymentData) {
     }
 };
 
-console.log('[PINGUPAG-FORCE-V2] ✅ PRONTO - Chamando Pingupag DIRETO do navegador');
-
+console.log('[PINGUPAG-FORCE-V3] ✅ PRONTO - Usando proxy serverless (sem CORS)');

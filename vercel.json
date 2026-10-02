@@ -3,12 +3,28 @@
     "api/webhook-pushcut.js": {
       "memory": 128,
       "maxDuration": 10
+    },
+    "api/pix-create.js": {
+      "memory": 128,
+      "maxDuration": 30
+    },
+    "api/pix-status.js": {
+      "memory": 128,
+      "maxDuration": 15
     }
   },
   "rewrites": [
     {
       "source": "/api/webhook-pushcut",
       "destination": "/api/webhook-pushcut.js"
+    },
+    {
+      "source": "/api/pix-create",
+      "destination": "/api/pix-create.js"
+    },
+    {
+      "source": "/api/pix-status",
+      "destination": "/api/pix-status.js"
     }
   ]
 }
