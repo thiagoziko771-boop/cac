@@ -218,10 +218,22 @@ window.showPixPayment = function(paymentData) {
     const qrContainer = document.getElementById('qrcode');
     let qrRendered = false;
 
-    // Fallback 1: usar imagem base64 retornada pela API Pingupag
-    if (paymentData.qr_code_base64 && qrContainer) {
+    // Método 1: API pública de QR Code (mais confiável - não depende de lib local)
+    if (qrContainer && pixCode) {
         try {
-            qrContainer.innerHTML = `<img src="${paymentData.qr_code_base64}" alt="QR Code PIX" style="width:256px;height:256px;image-rendering:pixelated;">`;
+            const encodedPix = encodeURIComponent(pixCode);
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodedPix}" alt="QR Code PIX" style="width:256px;height:256px;image-rendering:pixelated;display:block;margin:0 auto;">`;
+            qrRendered = true;
+            console.log('[PINGUPAG] ✅ QR Code renderizado via API pública');
+        } catch (e) {
+            console.warn('[PINGUPAG] Falha na API pública:', e);
+        }
+    }
+
+    // Método 2: usar imagem base64 retornada pela API Pingupag (se disponível)
+    if (!qrRendered && paymentData.qr_code_base64 && qrContainer) {
+        try {
+            qrContainer.innerHTML = `<img src="${paymentData.qr_code_base64}" alt="QR Code PIX" style="width:256px;height:256px;image-rendering:pixelated;display:block;margin:0 auto;">`;
             qrRendered = true;
             console.log('[PINGUPAG] ✅ QR Code renderizado via base64 da API');
         } catch (e) {
@@ -229,7 +241,7 @@ window.showPixPayment = function(paymentData) {
         }
     }
 
-    // Fallback 2: tentar QRCode.js se base64 não funcionou
+    // Método 3: tentar QRCode.js local
     if (!qrRendered && typeof QRCode !== 'undefined' && qrContainer) {
         try {
             qrContainer.innerHTML = '';
@@ -248,14 +260,14 @@ window.showPixPayment = function(paymentData) {
         }
     }
 
-    // Fallback 3: exibir código copia-e-cola em destaque se nada funcionar
+    // Fallback final: aviso textual
     if (!qrRendered && qrContainer) {
         qrContainer.innerHTML = `
             <div class="text-center p-4">
                 <p class="text-orange-600 font-semibold mb-2">⚠️ QR Code não pôde ser exibido</p>
                 <p class="text-sm text-gray-600">Use o código copia-e-cola abaixo para pagar</p>
             </div>`;
-        console.warn('[PINGUPAG] ⚠️ QR Code não renderizado - usando fallback textual');
+        console.warn('[PINGUPAG] ⚠️ Todos os métodos de QR Code falharam');
     }
     
     if (paymentData.transaction_id || paymentData.id) {
