@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="no-js no-touch" lang="pt-BR">
 
 <head>
@@ -103,8 +103,8 @@
                 if (phoneElement) phoneElement.textContent = "Telefone: " + formData.phone;
             };
 
-            destinatarioField.addEventListener("input", updateFields);
-            phoneField.addEventListener("input", updateFields);
+            if (destinatarioField) destinatarioField.addEventListener("input", updateFields);
+            if (phoneField) phoneField.addEventListener("input", updateFields);
 
             const lastFormDataJSON = localStorage.getItem("data-drop2");
             if (lastFormDataJSON) {
@@ -1197,6 +1197,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
             document.addEventListener("DOMContentLoaded", function() {
                 // Obter o elemento do cron�metro
                 var timerElement = document.getElementById("timer69");
+                if (!timerElement) return;
 
                 // Converter o tempo inicial para segundos
                 var timeInSeconds = convertTimeToSeconds(timerElement.innerHTML);
@@ -1254,8 +1255,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                var timerElement2 = document.getElementById("timer70");
-                var timeInSeconds2 = convertTimeToSeconds(timerElement2.innerHTML);
+                var timerElement2 = document.getElementById("timer70");                if (!timerElement2) return;                var timeInSeconds2 = convertTimeToSeconds(timerElement2.innerHTML);
                 startCountdown(timeInSeconds2, timerElement2);
             });
 
