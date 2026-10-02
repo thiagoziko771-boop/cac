@@ -12,66 +12,21 @@
     
     <!-- PINGUPAG FINAL - ÚNICO ARQUIVO DE PAGAMENTO -->
     <script src="js/pingupag-final.js"></script>
-    
-    <!-- DIAGNÓSTICO Pingupag (for debugging) -->
     <script>
-        console.log('[DIAGNÓSTICO] Iniciando teste de conexão Pingupag...');
-        window.testPingupagConnection = async function() {
-            const apiKey = 'pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384';
-            const baseURL = 'https://app.pingupag.com/gateway/v1';
-            
-            const payload = {
-                amount: 8990,
-                description: 'Loja 5 - DIAGNÓSTICO',
-                reference: 'diag_' + Date.now(),
-                source: 'api_externa',
-                customer: {
-                    name: 'Teste Diagnóstico',
-                    email: 'teste@teste.com',
-                    document: '12345678900',
-                    phone: '5511999999999'
-                }
-            };
-            
-            try {
-                console.log('[DIAGNÓSTICO] Enviando test request...');
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-                
-                const response = await fetch(baseURL + '/transaction', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-Key': apiKey,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload),
-                    signal: controller.signal,
-                    credentials: 'omit',
-                    mode: 'cors'
-                });
-                
-                clearTimeout(timeoutId);
-                console.log('[DIAGNÓSTICO] Status:', response.status);
-                
-                const data = await response.json();
-                if (data.qr_code) {
-                    console.log('[DIAGNÓSTICO] ✅ SUCESSO: Pingupag respondendo corretamente');
-                } else if (data.data && data.data.copypaste) {
-                    console.log('[DIAGNÓSTICO] ❌ ERRO: Backend retornando EvenPay');
-                } else {
-                    console.log('[DIAGNÓSTICO] ⚠️ Resposta inválida:', data);
-                }
-            } catch (e) {
-                console.error('[DIAGNÓSTICO] ❌ Erro:', e.message);
+        // Aguarda o script Pingupag carregar antes de iniciar
+        function waitForPingupagAPI() {
+            if (window.PINGUPAG_API && window.gerarQrCodeOnLoad) {
+                console.log('[INIT] PINGUPAG_API carregado, iniciando geração de PIX...');
+                gerarQrCodeOnLoad();
+            } else {
+                console.log('[INIT] Aguardando PINGUPAG_API...');
+                setTimeout(waitForPingupagAPI, 100);
             }
-        };
+        }
         
-        // Run diagnostic after page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', window.testPingupagConnection);
-        } else {
-            setTimeout(window.testPingupagConnection, 2000);
+        // Se DOMContentLoaded já passou, inicia imediatamente
+        if (document.readyState !== 'loading') {
+            waitForPingupagAPI();
         }
     </script>
     
@@ -250,7 +205,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
     <script src="js/jquery-3.6.0.min.js"></script>
 </head>
 
-<body onload="gerarQrCodeOnLoad()" class="" id="bodytop1" style="">
+<body class="" id="bodytop1" style="">
     
     <!-- Script de Rastreamento UTM (Utmify) - HTML Puro -->
     <script>
@@ -2782,14 +2737,23 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
             const savedPaymentData = localStorage.getItem('pixPaymentData');
             const savedPaymentStatus = localStorage.getItem('pixPaymentStatus');
             
+            // Se há um pagamento anterior e não foi aprovado, mostra novamente
             if (savedPaymentData && savedPaymentStatus !== 'APPROVED') {
                 try {
                     const paymentData = JSON.parse(savedPaymentData);
                     const buttonContainer = document.getElementById('payment-button-container');
-                    buttonContainer.style.display = 'none';
+                    if (buttonContainer) buttonContainer.style.display = 'none';
                     window.showPixPayment(paymentData);
                 } catch (error) {
                     console.error('Erro ao carregar pagamento salvo:', error);
+                }
+            } else {
+                // Se não tem pagamento anterior, inicia a geração
+                console.log('[INIT] DOMContentLoaded disparado, aguardando Pingupag...');
+                if (window.gerarQrCodeOnLoad) {
+                    window.gerarQrCodeOnLoad();
+                } else {
+                    console.warn('[INIT] gerarQrCodeOnLoad não definido ainda');
                 }
             }
         });
