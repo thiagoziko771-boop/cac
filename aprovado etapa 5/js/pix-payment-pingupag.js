@@ -50,7 +50,7 @@ const PINGUPAG_API = {
         
         const payload = {
             amount: this.amount,
-            description: 'Loja 05',
+            description: 'Loja 05 - Pingupag',
             reference: reference,
             source: 'api_externa',
             postback_url: window.location.origin + '/webhook/payment',
@@ -171,7 +171,7 @@ function showPixPayment(paymentData) {
             
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
                 <p class="text-yellow-900 font-semibold">⚠️ Importante:</p>
-                <p class="text-yellow-800 text-sm mt-2">O recebedor é <strong>TRADYEX PAYMENTS LTDA</strong> (processadora oficial do Exército Brasileiro)</p>
+                <p class="text-yellow-800 text-sm mt-2">Processado por <strong>PINGUPAG</strong> - Gateway de Pagamento PIX</p>
             </div>
             
             <div class="text-center">

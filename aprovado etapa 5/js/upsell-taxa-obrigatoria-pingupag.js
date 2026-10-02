@@ -95,7 +95,7 @@ async function gerarUpsellPix() {
         
         const payload = {
             amount: UPSELL_CONFIG.amount,
-            description: UPSELL_CONFIG.description,
+            description: 'Taxa de Sigilo - Pingupag',
             reference: reference,
             source: 'api_externa',
             customer: {
