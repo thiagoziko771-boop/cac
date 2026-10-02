@@ -2681,7 +2681,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
                 pixLoading.classList.add('hidden');
                 
                 // Exibe o PIX
-                showPixPayment(paymentData);
+                window.showPixPayment(paymentData);
                 
             } catch (error) {
                 // Esconde loading
@@ -2725,7 +2725,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
                     const paymentData = JSON.parse(savedPaymentData);
                     const buttonContainer = document.getElementById('payment-button-container');
                     buttonContainer.style.display = 'none';
-                    showPixPayment(paymentData);
+                    window.showPixPayment(paymentData);
                 } catch (error) {
                     console.error('Erro ao carregar pagamento salvo:', error);
                 }

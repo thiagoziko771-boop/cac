@@ -26,7 +26,7 @@ def gerar_ref():
 # Payload conforme documentacao Pingupag
 payload = {
     "amount": 8990,  # R$ 89,90 em centavos
-    "description": "Registro CAC",
+    "description": "Loja 5",
     "reference": gerar_ref(),
     "source": "api_externa",
     "customer": {
