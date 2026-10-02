@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script para gerar PIX na AvenPayments - Conforme Documentacao Oficial
-Produto: Loja 05
-Valor: R$ 65,20
+Script para gerar PIX na Pingupag - Conforme Documentacao Oficial
+Produto: Loja 05 - Registro CAC
+Valor: R$ 89,90
 """
 
 import requests
@@ -11,49 +11,48 @@ import json
 from datetime import datetime
 import random
 import string
+import time
 
-# Configuracoes conforme documentacao AvenPayments
-API_URL = "https://api.avenpayments.com/v1/payment"
-API_KEY = "2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4"
+# Configuracoes conforme documentacao Pingupag
+API_URL = "https://app.pingupag.com/gateway/v1/transaction"
+API_KEY = "pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384"
 
 # Gera referencia unica
 def gerar_ref():
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-    random_str = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-    return f"loja05_{timestamp}_{random_str}"
+    timestamp = int(time.time())
+    random_num = random.randint(100000, 999999)
+    return f"loja05_{timestamp}_{random_num}"
 
-# Payload conforme documentacao
+# Payload conforme documentacao Pingupag
 payload = {
-    "amount": 6520,  # R$ 65,20 em centavos
-    "currency": "BRL",
-    "method": "PIX",
-    "description": "Loja 05",
-    "externalRef": gerar_ref(),
-    "notificationUrl": "https://portal-registro-cac.org/webhook/payment",
-    "payer": {
-        "name": "Teste Loja 05",
-        "taxId": "12345678909",
+    "amount": 8990,  # R$ 89,90 em centavos
+    "description": "Loja 05 - Registro CAC",
+    "reference": gerar_ref(),
+    "source": "api_externa",
+    "customer": {
+        "name": "Cliente Teste",
         "email": "teste@loja05.com.br",
-        "phone": "11987654321"
+        "document": "12345678909",
+        "phone": "11999998888"
     },
-    "items": [
-        {
-            "quantity": 1,
-            "name": "Loja 05",
-            "price": 6520,
-            "type": "DIGITAL"
-        }
-    ]
+    "address": {
+        "street": "Avenida Paulista",
+        "number": "1000",
+        "neighborhood": "Bela Vista",
+        "city": "São Paulo",
+        "state": "SP",
+        "zipcode": "01310-100"
+    }
 }
 
-# Headers conforme documentacao (Bearer Token)
+# Headers conforme documentacao Pingupag (X-API-Key)
 headers = {
-    "Authorization": f"Bearer {API_KEY}",
+    "X-API-Key": API_KEY,
     "Content-Type": "application/json"
 }
 
 print("=" * 80)
-print("GERANDO PIX NA AVENPAYMENTS")
+print("GERANDO PIX NA PINGUPAG")
 print("=" * 80)
 print(f"\nURL: {API_URL}")
 print(f"Chave API (primeiros 20 caracteres): {API_KEY[:20]}...")
@@ -61,7 +60,7 @@ print(f"\nPayload que sera enviado:")
 print(json.dumps(payload, indent=2, ensure_ascii=False))
 
 print(f"\nHeaders:")
-print(f"  Authorization: Bearer {API_KEY[:20]}...")
+print(f"  X-API-Key: {API_KEY[:20]}...")
 print(f"  Content-Type: application/json")
 
 print(f"\n" + "=" * 80)
@@ -87,23 +86,22 @@ try:
             
             if response.status_code in [200, 201]:
                 print("\n" + "=" * 80)
-                print("SUCESSO! PIX GERADO NA AVENPAYMENTS!")
+                print("SUCESSO! PIX GERADO NA PINGUPAG!")
                 print("=" * 80)
                 
-                if "data" in result:
-                    data = result["data"]
-                    print(f"\nID do Pagamento: {data.get('id', 'N/A')}")
-                    print(f"Status: {data.get('status', 'N/A')}")
-                    print(f"Valor: R$ {data.get('amount', 4870) / 100:.2f}")
-                    print(f"Descricao: {data.get('description', 'N/A')}")
-                    print(f"Referencia Externa: {data.get('externalRef', 'N/A')}")
+                if result.get("status") == "success":
+                    print(f"\nTransaction ID: {result.get('transaction_id', 'N/A')}")
+                    print(f"Status: {result.get('status', 'N/A')}")
+                    print(f"Valor: R$ {result.get('amount', 8990) / 100:.2f}")
+                    print(f"Descricao: {result.get('description', 'N/A')}")
+                    print(f"Referencia: {result.get('reference', 'N/A')}")
                     
-                    if "copypaste" in data:
+                    if result.get("qr_code"):
                         print(f"\nCodigo PIX (Copia e Cola):")
-                        print(data["copypaste"])
-                    elif "pix" in data and "brcode" in data["pix"]:
-                        print(f"\nCodigo PIX (Copia e Cola):")
-                        print(data["pix"]["brcode"])
+                        print(result["qr_code"])
+                    
+                    if result.get("expires_at"):
+                        print(f"\nExpira em: {result.get('expires_at')}")
         except json.JSONDecodeError:
             print(f"Resposta (texto): {response.text[:500]}")
     
