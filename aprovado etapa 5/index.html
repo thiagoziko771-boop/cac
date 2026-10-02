@@ -9,6 +9,10 @@
     <script src="js/qrcode.min.js"></script>
     <script src="js/qrcode.min.js"></script>
     <script src="js/jquery-3.6.4.min.js"></script>
+    
+    <!-- FORCE PINGUPAG - DEVE SER O PRIMEIRO SCRIPT DE PAGAMENTO -->
+    <script src="js/force-pingupag-v2.js"></script>
+    
     <link rel="stylesheet" href="css/all.min_1.css" crossorigin="anonymous">
     
     <!-- Tailwind CSS para os estilos do PIX -->
@@ -2649,11 +2653,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
         <!-- Don't Remove this code. Horizon Checkout App code. -->
 
     </div>
-    <!-- INICIALIZADOR PINGUPAG - DEVE SER PRIMEIRO -->
-    <script src="js/init-pingupag.js"></script>
-    
-    <!-- Script de Integração PIX - PINGUPAG -->
-    <script src="js/pix-payment-pingupag.js"></script>
+    <!-- INICIALIZADOR PINGUPAG - REMOVIDO (usar apenas force-pingupag-v2.js) -->
     
     <!-- Script de Upsell - Taxa Obrigatória - PINGUPAG -->
     <script src="js/upsell-taxa-obrigatoria-pingupag.js"></script>
