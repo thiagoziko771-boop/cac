@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/webhook-pushcut.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/webhook-pushcut",
+      "destination": "/api/webhook-pushcut.js"
+    }
+  ]
+}

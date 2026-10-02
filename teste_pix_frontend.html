@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste PIX - Frontend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center">🧪 Teste de Geração PIX</h1>
+        
+        <div id="result" class="mb-6"></div>
+        
+        <button 
+            onclick="testarPixFrontend()" 
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg"
+        >
+            🚀 Testar Geração de PIX (Frontend)
+        </button>
+        
+        <hr class="my-6">
+        
+        <div class="bg-gray-50 p-4 rounded">
+            <h2 class="font-bold mb-2">📋 Logs do Console:</h2>
+            <pre id="logs" class="text-xs overflow-auto max-h-96 bg-black text-green-400 p-3 rounded font-mono"></pre>
+        </div>
+    </div>
+
+    <script>
+        const logs = [];
+        
+        // Override console.log
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog(...args);
+            logs.push('[LOG] ' + args.join(' '));
+            updateLogs();
+        };
+        
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError(...args);
+            logs.push('[ERROR] ' + args.join(' '));
+            updateLogs();
+        };
+        
+        function updateLogs() {
+            document.getElementById('logs').textContent = logs.join('\n');
+            document.getElementById('logs').scrollTop = document.getElementById('logs').scrollHeight;
+        }
+        
+        async function testarPixFrontend() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="bg-blue-50 p-4 rounded">⏳ Gerando PIX...</div>';
+            
+            try {
+                console.log('=== TESTE PIX FRONTEND ===');
+                console.log('Timestamp:', new Date().toISOString());
+                
+                const apiKey = '2zxA50CzfpTMZgKCwuotYv681fsfo4bcrXrdttHxdD4';
+                const baseURL = 'https://api.avenpayments.com/v1';
+                const amount = 4920; // R$ 49,20
+                
+                console.log('API Key:', apiKey.substring(0, 10) + '...');
+                console.log('Base URL:', baseURL);
+                console.log('Amount:', amount);
+                
+                const payload = {
+                    amount: amount,
+                    currency: 'BRL',
+                    method: 'PIX',
+                    description: 'Loja 05',
+                    externalRef: `cac_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    payer: {
+                        name: 'Teste Frontend',
+                        taxId: '11144477735',
+                        email: 'teste@frontend.com',
+                        phone: '+5511999999999'
+                    },
+                    items: [
+                        {
+                            quantity: 1,
+                            name: 'Loja 05',
+                            price: amount,
+                            type: 'DIGITAL'
+                        }
+                    ]
+                };
+                
+                console.log('Enviando payload:', JSON.stringify(payload, null, 2));
+                
+                const response = await fetch(`${baseURL}/payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload),
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                console.log('Status HTTP:', response.status);
+                console.log('Status Text:', response.statusText);
+                
+                const responseText = await response.text();
+                console.log('Response Body:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    data = { message: responseText };
+                }
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `Erro ${response.status}`);
+                }
+                
+                console.log('✅ SUCESSO!');
+                console.log('Payment ID:', data.id);
+                console.log('PIX Code:', data.data?.copypaste || 'Não encontrado');
+                
+                // Mostra resultado
+                const pixCode = data.data?.copypaste || data.copypaste || 'Não encontrado';
+                resultDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 p-6 rounded">
+                        <h2 class="text-2xl font-bold text-green-700 mb-4">✅ PIX Gerado com Sucesso!</h2>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-bold text-gray-700 mb-1">ID do Pagamento:</p>
+                            <code class="bg-gray-100 p-2 rounded text-xs block break-all">${data.id}</code>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-bold text-gray-700 mb-1">Valor:</p>
+                            <code class="bg-gray-100 p-2 rounded text-xs block">R$ ${(data.amount / 100).toFixed(2)}</code>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-bold text-gray-700 mb-1">Descrição:</p>
+                            <code class="bg-gray-100 p-2 rounded text-xs block">${data.description}</code>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-bold text-gray-700 mb-1">Código PIX (Copia e Cola):</p>
+                            <code class="bg-gray-900 text-green-400 p-3 rounded text-xs block break-all font-mono overflow-auto">${pixCode}</code>
+                        </div>
+                        
+                        <details class="mt-4">
+                            <summary class="cursor-pointer font-bold text-sm text-gray-700">Ver resposta completa</summary>
+                            <pre class="mt-2 bg-gray-100 p-3 rounded text-xs overflow-auto">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ ERRO:', error.message);
+                console.error('Stack:', error.stack);
+                
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-6 rounded">
+                        <h2 class="text-2xl font-bold text-red-700 mb-4">❌ Erro ao Gerar PIX</h2>
+                        <p class="text-red-700 mb-4">${error.message}</p>
+                        <details class="bg-red-100 p-3 rounded">
+                            <summary class="cursor-pointer font-bold">Detalhes técnicos</summary>
+                            <pre class="mt-2 text-xs overflow-auto">${error.stack}</pre>
+                        </details>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

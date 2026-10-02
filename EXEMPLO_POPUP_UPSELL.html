@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pagamento com Upsell - Exemplo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Backdrop para modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9000;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        /* Animação de entrada */
+        @keyframes popupEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content {
+            animation: popupEntry 0.4s ease-out;
+        }
+
+        /* Animação de confete */
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotateZ(360deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            animation: confetti-fall 3s ease-in forwards;
+            z-index: 8999;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- POPUP DE OBRIGADO (Primeira Modal) -->
+    <div id="thankYouModal" class="modal-backdrop">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md mx-auto text-center">
+            <!-- Ícone de sucesso animado -->
+            <div class="mb-6">
+                <div class="bg-green-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto">
+                    <i class="fas fa-check text-green-600 text-5xl"></i>
+                </div>
+            </div>
+
+            <!-- Mensagem de sucesso -->
+            <h2 class="text-3xl font-bold text-green-800 mb-4">Pagamento Confirmado!</h2>
+            <p class="text-gray-600 mb-6 text-lg">
+                Obrigado por seu pagamento de <strong>R$ 65,20</strong>
+            </p>
+
+            <!-- Detalhes do pagamento -->
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 text-left">
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>ID do Pagamento:</strong><br>
+                    <span class="font-mono text-xs text-gray-600">wl24dnfusukqkog5v4pbkkia</span>
+                </p>
+                <p class="text-sm text-gray-700">
+                    <strong>Status:</strong> ✅ Confirmado
+                </p>
+            </div>
+
+            <!-- Mensagem de aprovação -->
+            <p class="text-gray-700 mb-8">
+                Seu Certificado de Registro CAC será processado e enviado para o endereço cadastrado em até 30 dias.
+            </p>
+
+            <!-- Botão para continuar (vai mostrar o upsell) -->
+            <button 
+                onclick="showUpsellModal()" 
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition"
+            >
+                Continuar <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- POPUP DE UPSELL (Segunda Modal) -->
+    <div id="upsellModal" class="modal-backdrop">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-lg mx-auto">
+            <!-- Fita de "Oferta Especial" -->
+            <div class="absolute top-0 right-0 bg-red-500 text-white px-4 py-2 rounded-bl-lg text-sm font-bold">
+                ⚡ OFERTA ESPECIAL
+            </div>
+
+            <!-- Cabeçalho -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Aproveite Agora!</h2>
+                <p class="text-gray-600">Você desbloqueou uma oferta exclusiva para membros aprovados</p>
+            </div>
+
+            <!-- Produto Upsell -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-6 border-2 border-blue-200">
+                <div class="flex items-start gap-4">
+                    <!-- Ícone do produto -->
+                    <div class="bg-blue-500 text-white rounded-lg p-3 flex-shrink-0">
+                        <i class="fas fa-book text-2xl"></i>
+                    </div>
+
+                    <!-- Detalhes do produto -->
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-800 mb-1">
+                            Guia Completo CAC Premium
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-3">
+                            Acesso exclusivo a:
+                        </p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Legislação atualizada em PDF</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Vídeos de treinamento (3 horas)</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Suporte por email prioritário</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Atualizações mensais por 12 meses</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preço e desconto -->
+            <div class="text-center mb-6">
+                <p class="text-gray-600 text-sm mb-2">Preço normal: <strike class="text-gray-400">R$ 299,00</strike></p>
+                <div class="text-4xl font-bold text-blue-600 mb-2">
+                    R$ 97,00
+                </div>
+                <p class="text-green-600 font-semibold text-sm">
+                    💰 Economize 67% - Apenas para você!
+                </p>
+            </div>
+
+            <!-- Timer de oferta (opcional) -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-6 text-center">
+                <p class="text-red-700 font-bold text-sm">
+                    ⏰ Oferta válida por: <span id="countdown">05:00</span>
+                </p>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="space-y-3">
+                <!-- Botão primário (Aceitar upsell) -->
+                <button 
+                    onclick="acceptUpsell()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                >
+                    <i class="fas fa-shopping-cart"></i>
+                    Aproveitar Oferta - R$ 97,00
+                </button>
+
+                <!-- Botão secundário (Recusar/Pular) -->
+                <button 
+                    onclick="skipUpsell()" 
+                    class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition"
+                >
+                    Não, obrigado
+                </button>
+            </div>
+
+            <!-- Garantia/Segurança -->
+            <p class="text-xs text-gray-500 text-center mt-4">
+                <i class="fas fa-lock text-green-500 mr-1"></i>
+                Compra segura com garantia de 30 dias de reembolso
+            </p>
+        </div>
+    </div>
+
+    <!-- POPUP DE SUCESSO DO UPSELL (Terceira Modal - Opcional) -->
+    <div id="upsellSuccessModal" class="modal-backdrop">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md mx-auto text-center">
+            <div class="mb-6">
+                <div class="bg-blue-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto">
+                    <i class="fas fa-gift text-blue-600 text-5xl"></i>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-blue-800 mb-4">Acesso Liberado!</h2>
+            <p class="text-gray-600 mb-6">
+                Você agora tem acesso a todo o conteúdo premium do Guia CAC.
+            </p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 text-left">
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>Seu acesso:</strong><br>
+                    <span class="font-mono text-xs text-gray-600">cac-premium-12meses</span>
+                </p>
+                <p class="text-sm text-gray-700">
+                    <strong>Válido até:</strong> 23/09/2027
+                </p>
+            </div>
+
+            <button 
+                onclick="finishUpsell()" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition"
+            >
+                Acessar Conteúdo Premium
+            </button>
+        </div>
+    </div>
+
+    <!-- PÁGINA PRINCIPAL (simulação) -->
+    <div class="container mx-auto px-4 py-10">
+        <div class="max-w-2xl mx-auto">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Fluxo de Pagamento com Upsell</h1>
+            <p class="text-gray-600 mb-8">
+                Este exemplo demonstra como o fluxo funcionaria:
+            </p>
+
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">📊 Fluxo:</h3>
+                    <ol class="space-y-2 text-gray-600">
+                        <li><strong>1.</strong> Cliente paga R$ 65,20 (PIX)</li>
+                        <li><strong>2.</strong> ✅ Modal de "Obrigado" aparece</li>
+                        <li><strong>3.</strong> Cliente clica "Continuar"</li>
+                        <li><strong>4.</strong> 🎁 Modal de Upsell aparece (Guia Premium - R$ 97,00)</li>
+                        <li><strong>5.</strong> Se aceitar → Processa novo pagamento</li>
+                        <li><strong>6.</strong> Se recusar → Fecha e vai para página final</li>
+                    </ol>
+                </div>
+
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                    <h3 class="font-bold text-lg mb-2">💡 Benefícios do Upsell:</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>✓ Cliente já está em estado positivo (após pagamento aprovado)</li>
+                        <li>✓ Pode aumentar o ticket médio em 40-60%</li>
+                        <li>✓ Modal popup não é agressivo</li>
+                        <li>✓ Opção de "Não, obrigado" evita frustração</li>
+                    </ul>
+                </div>
+
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="font-bold text-lg mb-2">🎯 Próximos Passos:</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>1. Integrar este popup ao arquivo pix-payment.js</li>
+                        <li>2. Após onPaymentSuccess() → mostrar thankYouModal</li>
+                        <li>3. Botão "Continuar" → criar novo pagamento do upsell</li>
+                        <li>4. Integrar com Facebook Pixel para rastrear conversão</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <button 
+                    onclick="showThankYouModal()" 
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg"
+                >
+                    🧪 Testar Fluxo (Simular Pagamento)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para mostrar modal de obrigado
+        function showThankYouModal() {
+            document.getElementById('thankYouModal').classList.add('active');
+            // Confete de celebração
+            createConfetti();
+        }
+
+        // Função para ir para upsell
+        function showUpsellModal() {
+            document.getElementById('thankYouModal').classList.remove('active');
+            document.getElementById('upsellModal').classList.add('active');
+            // Inicia countdown
+            startCountdown();
+        }
+
+        // Função para aceitar upsell
+        function acceptUpsell() {
+            console.log('Upsell aceito! Processando pagamento de R$ 97,00...');
+            document.getElementById('upsellModal').classList.remove('active');
+            document.getElementById('upsellSuccessModal').classList.add('active');
+        }
+
+        // Função para pular upsell
+        function skipUpsell() {
+            console.log('Upsell recusado');
+            document.getElementById('upsellModal').classList.remove('active');
+            alert('Obrigado! Você pode acessar sua conta em: https://seu-painel.com');
+        }
+
+        // Função para finalizar
+        function finishUpsell() {
+            console.log('Finalizando...');
+            document.getElementById('upsellSuccessModal').classList.remove('active');
+            alert('✅ Fluxo completo! Redirecionando para painel...');
+        }
+
+        // Countdown de 5 minutos
+        function startCountdown() {
+            let time = 5 * 60; // 5 minutos em segundos
+            const countdownEl = document.getElementById('countdown');
+
+            setInterval(() => {
+                if (time > 0) {
+                    time--;
+                    const minutes = Math.floor(time / 60);
+                    const seconds = time % 60;
+                    countdownEl.textContent = 
+                        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        // Cria confete ao celebrar
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = ['#4ade80', '#60a5fa', '#fbbf24', '#f87171'][Math.floor(Math.random() * 4)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.animationDelay = Math.random() * 0.2 + 's';
+                document.body.appendChild(confetti);
+
+                // Remove após animação
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Fecha modais ao clicar fora
+        document.querySelectorAll('.modal-backdrop').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal && modal.id !== 'thankYouModal') {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
