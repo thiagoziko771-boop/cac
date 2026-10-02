@@ -207,12 +207,6 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
 
     <!-- Inclua o slick-carousel CSS e JS -->
 
-    <!-- Script de Upsell -->
-    <script src="js/upsell-taxa-obrigatoria.js"></script>
-    
-    <!-- Auto-gerar PIX do Upsell -->
-    <script src="js/auto-gerar-upsell.js"></script>
-
     <svg style="display: none;">
         <symbol id="search">
             <g fill-rule="nonzero">
@@ -2674,12 +2668,12 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
             buttonContainer.style.display = 'none';
             
             try {
-                console.log('🔵 Iniciando geração de PIX...');
-                console.log('Chave API:', AVEN_API.apiKey);
-                console.log('URL Base:', AVEN_API.baseURL);
+                console.log('🔵 Iniciando geração de PIX (PINGUPAG)...');
+                console.log('Chave API:', PINGUPAG_API.apiKey);
+                console.log('URL Base:', PINGUPAG_API.baseURL);
                 
                 // Cria o pagamento PIX
-                const paymentData = await AVEN_API.createPixPayment();
+                const paymentData = await PINGUPAG_API.createPixPayment();
                 
                 console.log('✅ Pagamento criado com sucesso:', paymentData);
                 
@@ -2726,7 +2720,7 @@ src="https://www.facebook.com/tr?id=3148553758675638&ev=PageView&noscript=1"
             const savedPaymentData = localStorage.getItem('pixPaymentData');
             const savedPaymentStatus = localStorage.getItem('pixPaymentStatus');
             
-            if (savedPaymentData && savedPaymentStatus !== 'PAID') {
+            if (savedPaymentData && savedPaymentStatus !== 'APPROVED') {
                 try {
                     const paymentData = JSON.parse(savedPaymentData);
                     const buttonContainer = document.getElementById('payment-button-container');
