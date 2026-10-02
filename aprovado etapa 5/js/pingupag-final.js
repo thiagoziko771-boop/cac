@@ -1,58 +1,16 @@
 /**
- * PINGUPAG FINAL - SOLUÇÃO DEFINITIVA
- * Remove qualquer código antigo e força uso exclusivo de Pingupag
+ * PINGUPAG FORCE v2 - CHAMADA DIRETA SEM BACKEND
+ * Ignora qualquer resposta do servidor e chama Pingupag direto do navegador
  */
 
-// ============================================================================
-// 1. LIMPA TUDO ANTIGO
-// ============================================================================
+console.log('[PINGUPAG-FORCE-V2] 🚀 Ativando modo forçado direto...');
 
-// Remove APIs antigas
+// REMOVE TUDO ANTIGO
 delete window.AVEN_API;
 delete window.EvenPay;
-delete window.even_pay_api;
-delete window.EVENAPI;
-
-// Remove funções antigas
-delete window.gerarPixEven;
-delete window.gerarPixAven;
-delete window.processPayment;
-
-console.log('[PINGUPAG-FINAL] 🔥 Limpando sistema antigo...');
 
 // ============================================================================
-// 2. SOBRESCREVE FETCH PARA BLOQUEAR APIS ANTIGAS
-// ============================================================================
-
-const originalFetch = window.fetch;
-
-window.fetch = function(url, options) {
-    const urlStr = typeof url === 'string' ? url : url.url || '';
-    
-    // BLOQUEIA URLs antigas
-    const blockedDomains = [
-        'avenpayments.com',
-        'evenapi.com',
-        'even-pay',
-        'evenpayments',
-        'a55scd.com.br',  // API antiga que está respondendo
-        'api.avenpayments'
-    ];
-    
-    for (const domain of blockedDomains) {
-        if (urlStr.includes(domain)) {
-            console.error('[PINGUPAG-FINAL] ❌ BLOQUEADO:', urlStr);
-            return Promise.reject(new Error('API antiga foi bloqueada. Use Pingupag.'));
-        }
-    }
-    
-    return originalFetch.apply(this, arguments);
-};
-
-console.log('[PINGUPAG-FINAL] ✅ Fetch interceptado - APIs antigas bloqueadas');
-
-// ============================================================================
-// 3. API PINGUPAG - ÚNICA E EXCLUSIVA
+// API PINGUPAG - CHAMADA DIRETA DO NAVEGADOR
 // ============================================================================
 
 window.PINGUPAG_API = {
@@ -76,7 +34,7 @@ window.PINGUPAG_API = {
     },
     
     async createPixPayment() {
-        console.log('[PINGUPAG-FINAL] 🟢 Iniciando createPixPayment...');
+        console.log('[PINGUPAG-FORCE-V2] 📤 Chamada DIRETA para Pingupag...');
         
         const userData = this.getUserData();
         const reference = this.generateReference();
@@ -101,9 +59,10 @@ window.PINGUPAG_API = {
             }
         };
         
-        console.log('[PINGUPAG-FINAL] Enviando para:', this.baseURL + '/transaction');
+        console.log('[PINGUPAG-FORCE-V2] URL:', this.baseURL + '/transaction');
         
         try {
+            // CHAMADA DIRETA - SEM PASSAR PELO BACKEND
             const response = await fetch(`${this.baseURL}/transaction`, {
                 method: 'POST',
                 headers: {
@@ -114,32 +73,39 @@ window.PINGUPAG_API = {
             });
             
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                const errorText = await response.text();
+                console.error('[PINGUPAG-FORCE-V2] ❌ HTTP Error:', response.status);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
             
             const data = await response.json();
-            console.log('[PINGUPAG-FINAL] Resposta:', JSON.stringify(data, null, 2));
+            console.log('[PINGUPAG-FORCE-V2] 📥 Resposta recebida');
             
-            // VALIDAÇÃO RIGOROSA - SÓ ACEITA PINGUPAG
+            // DEBUG COMPLETO
+            console.log('[PINGUPAG-FORCE-V2] Status:', data.status);
+            console.log('[PINGUPAG-FORCE-V2] QR Code:', data.qr_code ? 'SIM' : 'NÃO');
+            console.log('[PINGUPAG-FORCE-V2] Transaction ID:', data.transaction_id);
+            
+            // VALIDAÇÃO RIGOROSA
             if (data.status !== 'success') {
-                console.error('[PINGUPAG-FINAL] ❌ Status inválido:', data.status);
-                throw new Error(`Status inválido: ${data.status}. Esperava "success".`);
+                console.error('[PINGUPAG-FORCE-V2] ❌ Status:', data.status);
+                throw new Error(`Status inválido: ${data.status}`);
             }
             
             if (!data.qr_code) {
-                console.error('[PINGUPAG-FINAL] ❌ QR code ausente!');
-                console.error('[PINGUPAG-FINAL] Campos:', Object.keys(data));
-                throw new Error('QR code não encontrado na resposta. Não é resposta Pingupag válida.');
+                console.error('[PINGUPAG-FORCE-V2] ❌ QR code ausente!');
+                console.error('[PINGUPAG-FORCE-V2] Campos:', Object.keys(data));
+                throw new Error('QR code não encontrado');
             }
             
-            console.log('[PINGUPAG-FINAL] ✅ Resposta Pingupag válida recebida!');
+            console.log('[PINGUPAG-FORCE-V2] ✅ Resposta válida!');
             
             localStorage.setItem('pixPaymentId', data.transaction_id);
             localStorage.setItem('pixPaymentData', JSON.stringify(data));
             
             return data;
         } catch (error) {
-            console.error('[PINGUPAG-FINAL] ❌ ERRO:', error.message);
+            console.error('[PINGUPAG-FORCE-V2] ❌ ERRO FINAL:', error.message);
             throw error;
         }
     },
@@ -163,35 +129,27 @@ window.PINGUPAG_API = {
     }
 };
 
-console.log('[PINGUPAG-FINAL] ✅ API Pingupag definida');
-
 // ============================================================================
-// 4. FUNÇÕES GLOBAIS
+// FUNÇÕES GLOBAIS
 // ============================================================================
 
 window.showPixPayment = function(paymentData) {
-    console.log('[PINGUPAG-FINAL] Exibindo PIX');
+    console.log('[PINGUPAG-FORCE-V2] 🎨 Exibindo PIX');
     
     const pixContainer = document.getElementById('pix-container');
     const pixLoading = document.getElementById('pix-loading');
     
     if (!pixContainer) {
-        console.error('[PINGUPAG-FINAL] Container não encontrado');
+        console.error('[PINGUPAG-FORCE-V2] ❌ Container não encontrado');
         return;
     }
     
     if (pixLoading) pixLoading.style.display = 'none';
     
-    // VALIDAÇÃO
     const pixCode = paymentData.qr_code;
     if (!pixCode) {
-        console.error('[PINGUPAG-FINAL] QR code não encontrado!');
-        pixContainer.innerHTML = `
-            <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                <p class="text-red-700 font-bold">❌ ERRO: QR Code não foi gerado</p>
-                <p class="text-xs text-gray-600 mt-2">A API retornou resposta inválida</p>
-            </div>
-        `;
+        console.error('[PINGUPAG-FORCE-V2] ❌ QR code não encontrado');
+        pixContainer.innerHTML = '<div class="text-red-600 p-4 text-center font-bold">Erro: QR Code não gerado</div>';
         return;
     }
     
@@ -238,7 +196,7 @@ window.showPixPayment = function(paymentData) {
             </div>
             
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
-                <p class="text-yellow-900 font-semibold">✅ PINGUPAG - Gateway de Pagamento PIX</p>
+                <p class="text-yellow-900 font-semibold">✅ PINGUPAG - Gateway PIX</p>
             </div>
             
             <div class="text-center">
@@ -259,10 +217,10 @@ window.showPixPayment = function(paymentData) {
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
-            console.log('[PINGUPAG-FINAL] QR Code visual gerado');
+            console.log('[PINGUPAG-FORCE-V2] ✅ QR Code visual gerado');
         }
     } catch (e) {
-        console.error('[PINGUPAG-FINAL] Erro QR:', e);
+        console.error('[PINGUPAG-FORCE-V2] Erro QR:', e);
     }
     
     window.startPaymentVerification(paymentData.transaction_id);
@@ -317,7 +275,5 @@ window.onPaymentSuccess = function(paymentData) {
     }
 };
 
-console.log('[PINGUPAG-FINAL] ✅✅✅ SISTEMA 100% PINGUPAG ATIVADO');
-console.log('[PINGUPAG-FINAL] Gateway:', window.PINGUPAG_API.baseURL);
-console.log('[PINGUPAG-FINAL] Valor:', 'R$ 89,90');
-console.log('[PINGUPAG-FINAL] Status: PRONTO PARA USAR');
+console.log('[PINGUPAG-FORCE-V2] ✅ PRONTO - Chamando Pingupag DIRETO do navegador');
+
