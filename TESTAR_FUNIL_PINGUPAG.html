@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Funil Pingupag - Loja 05</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .price-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .price-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+        .price-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .price-option.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .price-option .price {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .price-option .desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        .btn-submit.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 6px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            display: block;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            display: block;
+        }
+        .result h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .result p {
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .qr-code img {
+            max-width: 200px;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+        .pix-code {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-size: 12px;
+            font-family: monospace;
+            margin: 10px 0;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .info-badge {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="badge">🚀 Teste Funil com Pingupag</div>
+        
+        <h1>Loja 05</h1>
+        <p class="subtitle">Teste a geração de PIX no funil</p>
+
+        <div class="info-badge">
+            ℹ️ Este é um teste de integração do funil com a gateway Pingupag
+        </div>
+
+        <form id="funilForm">
+            <div class="form-group">
+                <label for="nome">Nome Completo *</label>
+                <input type="text" id="nome" value="João da Silva" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" value="joao@teste.com.br" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cpf">CPF *</label>
+                <input type="text" id="cpf" placeholder="000.000.000-00" value="123.456.789-09" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone (WhatsApp) *</label>
+                <input type="tel" id="telefone" placeholder="(11) 99999-9999" value="(11) 98765-4321" required>
+            </div>
+
+            <div class="form-group">
+                <label>Selecione o Valor *</label>
+                <div class="price-selector">
+                    <div class="price-option active" data-valor="89.90">
+                        <div class="price">R$ 89,90</div>
+                        <div class="desc">Acesso Básico</div>
+                    </div>
+                    <div class="price-option" data-valor="197.00">
+                        <div class="price">R$ 197,00</div>
+                        <div class="desc">Acesso Premium</div>
+                    </div>
+                </div>
+                <input type="hidden" id="valor" value="89.90">
+            </div>
+
+            <div class="form-group">
+                <label for="cidade">Cidade *</label>
+                <input type="text" id="cidade" value="São Paulo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado (UF) *</label>
+                <select id="estado" required>
+                    <option value="SP" selected>SP - São Paulo</option>
+                    <option value="RJ">RJ - Rio de Janeiro</option>
+                    <option value="MG">MG - Minas Gerais</option>
+                    <option value="BA">BA - Bahia</option>
+                    <option value="SC">SC - Santa Catarina</option>
+                    <option value="PR">PR - Paraná</option>
+                    <option value="GO">GO - Goiás</option>
+                    <option value="DF">DF - Brasília</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Gerar PIX na Pingupag</button>
+        </form>
+
+        <div id="resultado" class="result"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384';
+        const API_URL = 'https://app.pingupag.com/gateway/v1/transaction';
+
+        // Seletor de preço
+        document.querySelectorAll('.price-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.price-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('valor').value = this.dataset.valor;
+            });
+        });
+
+        // Formulário
+        document.getElementById('funilForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await gerarPixFunil();
+        });
+
+        async function gerarPixFunil() {
+            const btn = document.querySelector('.btn-submit');
+            const resultado = document.getElementById('resultado');
+            
+            btn.classList.add('loading');
+            btn.textContent = '⏳ Processando...';
+            resultado.innerHTML = '';
+
+            try {
+                // Coleta dados
+                const nome = document.getElementById('nome').value;
+                const email = document.getElementById('email').value;
+                const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+                const telefone = document.getElementById('telefone').value.replace(/\D/g, '');
+                const valor = parseFloat(document.getElementById('valor').value);
+                const cidade = document.getElementById('cidade').value;
+                const estado = document.getElementById('estado').value;
+
+                // Valida dados
+                if (!nome || !email || !cpf || !telefone) {
+                    throw new Error('Por favor, preencha todos os campos obrigatórios');
+                }
+
+                // Converte valor para centavos
+                const amount = Math.round(valor * 100);
+                const reference = `funil_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+                // Monta payload para Pingupag
+                const payload = {
+                    amount: amount,
+                    description: 'Loja 05',
+                    reference: reference,
+                    source: 'api_externa',
+                    postback_url: window.location.origin + '/webhook/payment',
+                    customer: {
+                        name: nome,
+                        email: email,
+                        document: cpf,
+                        phone: telefone
+                    },
+                    address: {
+                        city: cidade,
+                        state: estado,
+                        street: 'Teste',
+                        number: '0',
+                        zipcode: '00000000'
+                    },
+                    tracking: {
+                        utm_source: 'funil-teste',
+                        utm_campaign: 'loja-05'
+                    }
+                };
+
+                console.log('📤 Enviando para Pingupag:', payload);
+
+                // Requisição
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const dados = await response.json();
+                console.log('📥 Resposta Pingupag:', dados);
+
+                if (response.ok && dados.status === 'success') {
+                    // Sucesso!
+                    resultado.className = 'result success';
+                    resultado.innerHTML = `
+                        <h3>✅ PIX Gerado com Sucesso!</h3>
+                        <p><strong>Cliente:</strong> ${nome}</p>
+                        <p><strong>Valor:</strong> R$ ${(amount / 100).toFixed(2)}</p>
+                        <p><strong>ID Transação:</strong> ${dados.transaction_id}</p>
+                        <p><strong>Status:</strong> ${dados.status}</p>
+                        
+                        ${dados.qr_code_base64 ? `
+                            <div class="qr-code">
+                                <h4>📱 Código QR:</h4>
+                                <img src="${dados.qr_code_base64}" alt="QR Code PIX">
+                            </div>
+                        ` : ''}
+                        
+                        <div>
+                            <p><strong>Copia e Cola:</strong></p>
+                            <div class="pix-code">${dados.qr_code}</div>
+                            <button class="copy-btn" onclick="copiarPix('${dados.qr_code}')">
+                                📋 Copiar PIX
+                            </button>
+                        </div>
+                        
+                        <p style="margin-top: 15px; font-size: 12px; color: #333; opacity: 0.7;">
+                            ✓ Teste completado em ${new Date().toLocaleString('pt-BR')}
+                        </p>
+                    `;
+                } else {
+                    // Erro
+                    resultado.className = 'result error';
+                    resultado.innerHTML = `
+                        <h3>❌ Erro ao Gerar PIX</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Mensagem:</strong> ${dados.message || 'Erro desconhecido'}</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Verifique o console para mais detalhes</p>
+                    `;
+                    console.error('Erro na API:', dados);
+                }
+            } catch (erro) {
+                resultado.className = 'result error';
+                resultado.innerHTML = `
+                    <h3>❌ Erro na Requisição</h3>
+                    <p>${erro.message}</p>
+                `;
+                console.error('Erro:', erro);
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Gerar PIX na Pingupag';
+            }
+        }
+
+        function copiarPix(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('✓ PIX copiado para a área de transferência!');
+            }).catch(() => {
+                alert('Erro ao copiar. Tente manualmente.');
+            });
+        }
+    </script>
+</body>
+</html>
