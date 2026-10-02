@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Script para gerar PIX na Pingupag - Conforme Documentacao Oficial
-Produto: Loja 05 - Registro CAC
+Produto: Registro CAC
 Valor: R$ 89,90
 """
 
@@ -21,17 +21,17 @@ API_KEY = "pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca
 def gerar_ref():
     timestamp = int(time.time())
     random_num = random.randint(100000, 999999)
-    return f"loja05_{timestamp}_{random_num}"
+    return f"cac_{timestamp}_{random_num}"
 
 # Payload conforme documentacao Pingupag
 payload = {
     "amount": 8990,  # R$ 89,90 em centavos
-    "description": "Loja 05 - Registro CAC",
+    "description": "Registro CAC",
     "reference": gerar_ref(),
     "source": "api_externa",
     "customer": {
         "name": "Cliente Teste",
-        "email": "teste@loja05.com.br",
+        "email": "teste@registrocac.com.br",
         "document": "12345678909",
         "phone": "11999998888"
     },

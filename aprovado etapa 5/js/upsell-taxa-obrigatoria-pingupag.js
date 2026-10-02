@@ -6,7 +6,7 @@
 
 const UPSELL_CONFIG = {
     amount: 8120, // R$ 81,20 em centavos
-    description: 'Serviço de Tratamento Sigiloso',
+    description: 'Serviço de Tratamento Sigiloso - Registro CAC',
     apiKey: 'pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384',
     baseURL: 'https://app.pingupag.com/gateway/v1'
 };
@@ -95,7 +95,7 @@ async function gerarUpsellPix() {
         
         const payload = {
             amount: UPSELL_CONFIG.amount,
-            description: 'Taxa de Sigilo - Pingupag',
+            description: 'Taxa de Sigilo - Registro CAC',
             reference: reference,
             source: 'api_externa',
             customer: {

